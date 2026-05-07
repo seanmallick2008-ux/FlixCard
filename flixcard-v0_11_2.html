@@ -1,0 +1,5234 @@
+<!DOCTYPE html>
+<!-- FlixCard — version auto-derived from VERSION_LOG
+     Every change requires a VERSION_LOG entry.
+     Blueprint: flixcard-blueprint.html
+     Repository: https://github.com/seanmallick2008-ux/FlixCard
+-->
+
+<!--
+  ╔══════════════════════════════════════════════════════════════════════════╗
+  ║                    FLIXCARD – BLUEPRINT & RULES                          ║
+  ║                       Embedded in source for reference                   ║
+  ║                            Blueprint v0.11.2                             ║
+  ╚══════════════════════════════════════════════════════════════════════════╝
+-->
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █                        VERSIONING                          █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  SCHEMA: Semantic Versioning → MAJOR.MINOR.PATCH
+  CURRENT VERSION: auto-derived from the last entry in VERSION_LOG
+
+  MAJOR – Complete rebuild or breaking change
+  ── Example: full UI redesign
+  ── Example: JSON structure changes (old files become incompatible)
+  ── Example: an entire page is replaced or removed
+  ── → Increment resets MINOR and PATCH to 0
+
+  MINOR – New feature or new page
+  ── Example: Quiz mode added                    → 0.1.0 → 0.2.0
+  ── Example: Multi-language support added       → 0.2.0 → 0.3.0
+  ── Example: New statistics view                → 0.3.0 → 0.4.0
+  ── → Increment resets PATCH to 0
+
+  PATCH – Bugfix, small adjustment, OR layout/rule change
+  ── Example: Progress bar shows wrong %         → 0.1.0 → 0.1.1
+  ── Example: Button colour corrected            → 0.1.1 → 0.1.2
+  ── Example: Breakpoint value adjusted          → 0.1.2 → 0.1.3
+  ── Example: New rule added to Blueprint        → 0.1.3 → 0.1.4
+  ── IMPORTANT: Blueprint changes also require a PATCH entry
+
+  AUTOMATION (single source of truth):
+  ── VERSION_LOG in the script is the only source of truth
+  ── APP_VERSION is automatically derived from the last entry
+  ── File title, nav, welcome screen → all updated automatically
+  ── New release = new entry in VERSION_LOG + i18n key in all 4 languages
+
+  VERSION HISTORY (complete):
+  ── 0.1.0  [MINOR]  Welcome screen, Library, Deck management
+  ── 0.2.0  [MINOR]  Deck Detail, Create Deck, Manage Cards
+  ── 0.3.0  [MINOR]  Flashcard mode, Quiz mode, Spaced Repetition
+  ── 0.3.1  [PATCH]  Bugfixes: card flip, quiz answers, session summary
+  ── 0.4.0  [MINOR]  Statistics, Settings, Language selection, Reset
+  ── 0.5.0  [MINOR]  Main Interface (Hub), Responsive layout, i18n version log
+  ── 0.5.1  [PATCH]  Responsive layout extended for mobile & tablet, auto version
+  ── 0.6.0  [MINOR]  Full UI internationalisation — all interface text in i18n
+  ── 0.6.1  [PATCH]  Scroll-arrow indicator on all scrollable lists
+  ── 0.6.2  [PATCH]  Blueprint rules embedded as comment in source code
+  ── 0.6.3  [PATCH]  Replaced emoji with style-consistent Unicode symbols
+  ── 0.6.4  [PATCH]  Settings icon restored to ⚙, language flags replaced with ISO codes
+  ── 0.7.0  [MINOR]  Upload Deck button in library — import shared decks
+  ── 0.7.1  [PATCH]  Fix hidden file input, symmetric footer buttons, settings icon only
+  ── 0.8.0  [MINOR]  Favorites mode — mark cards and practice them separately
+  ── 0.8.1  [PATCH]  Fix card flip — unflip before loading next card, no content bleed
+  ── 0.8.2  [PATCH]  Cards can be flipped unlimited times before rating
+  ── 0.9.0  [MINOR]  Reverse mode, Hard Cards session, Session length selector
+  ── 0.9.1  [PATCH]  Replace reverse toggle with Standard / Reversed / Random direction chips
+  ── 0.10.0 [MINOR]  Write mode — type answers, fuzzy matching with accent detection
+  ── 0.10.1 [PATCH]  Fix missing toggleFavorite declaration causing JS crash on load
+  ── 0.10.2 [PATCH]  Rule compliance: hover guards, off-grid comments, orphaned i18n removed, new quality rules
+  ── 0.11.0 [MINOR]  Architecture refactor: data-i18n system, initSession, hub helpers, shared session state
+  ── 0.11.1 [PATCH]  Full compliance audit: off-grid comments, hex colors, function comments, btn padding
+  ── 0.11.2 [PATCH]  Version log redesign: grouped by MINOR, grid layout, no inline comment leak
+
+  DISPLAY IN APP (Settings):
+  ── All entries visible (MAJOR + MINOR + PATCH)
+  ── Type badge coloured: MAJOR = Red, MINOR = Gold, PATCH = Dimmed
+  ── Newest version first
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █                       DESIGN RULES                         █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  STYLE: Editorial / Dark
+  ── Background:         #12100e  (very dark brown-black)
+  ── Surface:            #1a1714  (slightly lighter brown for cards)
+  ── Primary text:       #e8e0d0  (warm off-white)
+  ── Accent colour:      #c8a96e  (gold)
+  ── Gold dimmed:        #7a6540  (for secondary gold elements)
+  ── Dividers:           #2a2520  (dark brown)
+  ── Secondary text:     #5a5040  (dimmed brown)
+  ── Error / Wrong:      #c0392b  (dark red)
+  ── Success / Correct:  #4a7c59  (dark green)
+
+  ALL COLOUR VALUES AS CSS VARIABLES:
+  ── var(--bg)           = #12100e
+  ── var(--surface)      = #1a1714
+  ── var(--text-primary) = #e8e0d0
+  ── var(--gold)         = #c8a96e
+  ── var(--gold-dim)     = #7a6540
+  ── var(--border)       = #2a2520
+  ── var(--text-dim)     = #5a5040
+  ── var(--error)        = #c0392b
+  ── var(--success)      = #4a7c59
+
+  TYPOGRAPHY:
+  ── Display font:    'Playfair Display' (Serif) → titles, headings, italic
+  ── Body font:       'DM Sans' → body text, labels, buttons
+  ── Monospace:       'Space Mono' → numbers, statistics, version numbers
+
+  FONT SIZES:
+  ── H1 (page title):         clamp(1.6rem, 5vw, 2.2rem) – Playfair Display
+  ── H2 (section title):      1.3rem – Playfair Display
+  ── Label / Navigation:      0.6–0.65rem, letter-spacing: 2px, uppercase – DM Sans
+  ── Body text:               0.88rem – DM Sans
+  ── Statistic numbers:       2rem – Space Mono
+  ── Version numbers:         0.62rem – Space Mono
+
+  BORDER-RADIUS:
+  ── Cards / containers / buttons:  0px  (sharp – editorial)
+  ── Exception: progress bar:       2px
+  ── Exception: spinner:            50%
+  ── Exception: scroll-arrow:       50%
+
+  ANIMATIONS:
+  ── Page transitions:    fade-in 200ms ease
+  ── Card flip:           CSS flip 400ms ease (perspective: 1000px)
+  ── Hover effects:       colour/border transition 150ms
+  ── Spinner:             rotate 800ms linear infinite
+  ── No unnecessary animations – calm, elegant UI
+
+  NAVIGATION:
+  ── Always sticky top (position: sticky, top: 0, z-index: 100)
+  ── Height: var(--nav-h) = 48px (xs/sm) / 56px (md/lg)
+  ── Left: app name + version (Playfair, gold)
+  ── Right: current page (uppercase label) OR back button
+  ── Bottom border: 1px solid var(--border)
+  ── Background: var(--bg) – so content scrolls beneath
+
+  DIVIDERS:
+  ── Always 1px solid var(--border)
+  ── Never thicker, never a different colour without a Blueprint entry
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █                 RESPONSIVE LAYOUT RULES                    █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  APPROACH: Mobile-first – base styles apply to XS, breakpoints upward
+
+  BREAKPOINTS:
+  ── XS  < 480px     Small smartphone (default, no media query)
+  ── SM  480–767px   Large smartphone / phablet
+  ── MD  768–1023px  Tablet
+  ── LG  ≥ 1024px    Laptop / desktop
+
+  CSS VARIABLES PER BREAKPOINT:
+  ── XS:  --nav-h: 48px  --pad-h: 16px  --pad-card: 14px  --gap: 16px
+  ── SM:  --pad-h: 20px  --pad-card: 18px  --gap: 20px
+  ── MD:  --nav-h: 56px  --pad-h: 28px  --pad-card: 22px  --gap: 24px
+  ── LG:  --nav-h: 56px  --pad-h: 32px  --pad-card: 24px  --gap: 28px
+
+  APP COLUMN:
+  ── XS/SM: full width, no borders
+  ── MD:    max-width: 600px, centred, side borders 1px solid var(--border)
+  ── LG:    max-width: 680px, centred, side borders + grid-line background
+
+  TOUCH TARGETS:
+  ── Minimum height of all clickable elements: 56px (XS), relaxed from MD
+  ── Buttons: padding 14px 20px (XS) → 12px 28px (LG)
+
+  HOVER EFFECTS:
+  ── Mouse devices only: @media (hover: hover)
+  ── Touch: :active for tap feedback, no :hover
+
+  FONT SCALING:
+  ── XS: 0.88rem  SM: 0.90rem  MD/LG: 0.95rem
+  ── Never below 0.88rem for body text (readability)
+
+  FLASHCARD:
+  ── XS: min-height 200px  SM: 220px  MD: 260px  LG: 280px
+  ── Text: XS: 1.4rem  SM: 1.7rem  MD: 2.0rem  LG: 2.2rem
+
+  VERY NARROW DEVICES (< 360px):
+  ── Summary stats: flex-direction: column
+  ── Deck stats: flex-wrap: wrap, 2 per row
+  ── No horizontal scrolling allowed
+
+  SCROLL VISIBILITY:
+  ── Every scrollable list (deck-list, card-list, stats-deck-list,
+     settings-scroll) must have a .scroll-arrow indicator
+  ── Arrow appears when content exists below the visible area
+  ── Arrow disappears when user has scrolled to the bottom
+  ── Implementation: setupScrollArrow(scrollElId, arrowElId)
+
+  HUB CHIP CONTROLS:
+  ── Session length chips (10 / 20 / All) live inside the Flashcards hub item
+  ── Direction chips (Standard / Reversed / Random) live in a separate row
+  ── Active chip: border-color + color = var(--gold), font: var(--font-mono)
+  ── Chips use onclick with event.stopPropagation() to avoid triggering the hub item
+
+  ALLOWED SPACING VALUES (from the grid):
+  ── 4px, 8px, 12px, 14px, 16px, 18px, 20px, 22px, 24px, 28px, 32px, 40px
+  ── Other values only with a comment justification in the code
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █                    DATA & STORAGE                          █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  CONCEPT: Each user has their own JSON file
+  ── The HTML file (index.html) is the app – share it, don't modify it
+  ── The JSON file (flixcard-data.json) holds personal data
+  ── No cloud, no account, no Storage API (no localStorage, no cookies)
+
+  JSON STRUCTURE (currently implemented):
+  ── {
+  ──   "version": "1.0",           // JSON format version (not app version)
+  ──   "language": "en",           // Language: en | de | fr | es
+  ──   "stats": {
+  ──     "streak": 7,
+  ──     "lastStudyDay": "2026-04-27",
+  ──     "totalLearned": 142
+  ──   },
+  ──   "decks": [
+  ──     {
+  ──       "id": "uuid",
+  ──       "name": "Spanish B1",
+  ──       "description": "Basic vocabulary",
+  ──       "created": "2026-01-10",
+  ──       "cards": [
+  ──         {
+  ──           "id": "uuid",
+  ──           "front": "Dog",
+  ──           "back": "el perro",
+  ──           "learned": false,
+  ──           "errorRate": 0.2,
+  ──           "streak": 0,
+  ──           "favorite": false,
+  ──           "nextReview": "2026-04-28"
+  ──         }
+  ──       ]
+  ──     }
+  ──   ]
+  ── }
+
+  ON START:
+  ── No JSON loaded → Welcome screen (page 0)
+  ── JSON loaded → applyLanguage() → renderLibrary() → Library (page 1)
+
+  SAVING:
+  ── No auto-save (browser security restriction)
+  ── Unsaved banner appears on every state change
+  ── User clicks "Save JSON" → downloads as flixcard-data.json
+
+  JSON COMPATIBILITY:
+  ── JSON structure must NEVER change without a MAJOR version increment
+  ── App checks "version" field on import
+  ── Incompatible version → clear error message, no silent failure
+  ── New optional fields allowed (MINOR) – old app ignores them
+  ── Missing fields → use default value, no crash
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █                PAGES & NAVIGATION PLAN                     █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  TECHNICAL: Single HTML file, pages shown/hidden via JS (no reload)
+  NAVIGATION: showPage('page-id') hides all pages and shows the target
+
+  PAGE OVERVIEW (implemented):
+  ── [0] page-welcome       → First launch: load JSON or start fresh
+  ── [1] page-library       → All decks (main page after loading data)
+  ── [2] page-deck-detail   → Deprecated, delegates to Hub (openDeck → openHub)
+  ── [3] page-create-deck   → Create or edit a deck
+  ── [4] page-manage-cards  → Manage cards within a deck
+  ── [5] page-hub           → Main interface: all modes for a deck
+  ── [6] page-flashcard     → Flashcard learning mode (all / spaced / favorites / hard)
+  ── [6b] page-summary      → Result summary after any learn session
+  ── [7] page-quiz          → Multiple-choice quiz
+  ── [7b] page-write        → Write mode — type answers, fuzzy match
+  ── [8] page-stats         → Statistics (streak, progress per deck)
+  ── [9] page-settings      → Settings (language, import, export, reset)
+  ── [U] update-overlay     → Automatic update overlay (outside page system)
+
+  HUB MODES (page-hub):
+  ── Flashcards    → startFlashcards(deckId, 'all')
+  ── Spaced Rep    → startFlashcards(deckId, 'spaced')
+  ── Quiz          → startQuiz(deckId)
+  ── Write         → startWrite(deckId)
+  ── Favorites     → startFavorites(deckId)
+  ── Hard Cards    → startHardCards(deckId)
+  ── Direction     → chip toggle: Standard / Reversed / Random (affects all flashcard modes)
+  ── Session Len   → chip toggle: 10 / 20 / All (affects Flashcards and Write)
+  ── Manage Cards  → openManageCards()
+  ── Statistics    → openStats()
+  ── Settings      → openSettings()
+
+  LIBRARY FOOTER:
+  ── + New Deck    → openNewDeckForm()
+  ── ↑ Upload Deck → triggerDeckImport() (imports standalone deck JSON, no user data)
+  ── ⚙            → openSettings()
+
+  NAVIGATION FLOW:
+  ── Welcome → (Import / Fresh start) → Library
+  ── Library → Hub (click on deck)
+  ── Hub → any mode → Summary or Hub
+  ── Settings / Stats → Library (back)
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █                  AUTO-UPDATE CHECKER RULES                 █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  PURPOSE:
+  ── App checks every 20s whether a new version is live on GitHub Pages
+  ── Newer version detected → show overlay (no interaction possible)
+  ── Once deploy is complete → automatic page reload
+
+  TECHNICAL:
+  ── URL: https://seanmallick2008-ux.github.io/FlixCard/index.html
+  ── Cache-bust: ?_=Date.now() on every fetch
+  ── Version detection: regex on VERSION_LOG in source code
+  ── Comparison: semver comparison MAJOR.MINOR.PATCH
+
+  FLOW:
+  ── Phase 1 (every 20s): New version detected? → show overlay
+  ── Phase 2 (every 20s): Wait until deploy is done → reload
+  ── Network error: silently ignored, retry at next interval
+
+  OVERLAY RULES:
+  ── No interaction possible while overlay is active
+  ── Shows: old version → new version, spinner, status text
+  ── No close button – user must wait
+  ── Backdrop-filter: blur(6px) for dramatic effect
+
+  CONSTANTS:
+  ── UPDATE_CHECK_URL:      GitHub Pages URL of index.html
+  ── UPDATE_CHECK_INTERVAL: 20000ms (20 seconds)
+  ── First check: after 20s delay (no immediate check on load)
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █                   MULTI-LANGUAGE (i18n)                    █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  SUPPORTED LANGUAGES:
+  ── English (base / fallback) ← REQUIRED, always complete
+  ── German
+  ── French
+  ── Spanish
+
+  RULES:
+  ── No hardcoded text in HTML or JS – without exception
+  ── Every new string must be entered in all 4 languages
+  ── Missing translation key → fall back to English, never empty
+  ── English is the base – write in English first, then translate
+  ── All keys in camelCase English (e.g. "libraryTitle")
+  ── Version log descriptions are also i18n keys (e.g. "ver051")
+
+  LANGUAGE SWITCHING:
+  ── setLanguage(lang) → set state.language → call applyLanguage()
+  ── applyLanguage() re-renders ALL visible UI strings
+  ── Language is saved in the user's JSON file
+  ── On import: applyLanguage() is called immediately after loading
+
+  ADDING NEW STRINGS:
+  ── 1. Add key to i18n.en (required)
+  ── 2. Add key to i18n.de, i18n.fr, i18n.es (required)
+  ── 3. Use t('key') in HTML/JS – never write text directly
+  ── 4. Update applyLanguage() if the text is dynamically rendered
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █                   CODE STRUCTURE RULES                     █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  FILE STRUCTURE (order in HTML):
+  ── 1. HTML comment block with Blueprint (this block)
+  ── 2. <head>: viewport, fonts, CSS
+  ── 3. <body> → <div class="app-shell">
+  ── 4. Update overlay (before all pages)
+  ── 5. Pages in order: welcome → library → flashcard → summary → quiz →
+  ──    write → hub → stats → settings → deck-detail → create-deck → manage-cards
+  ── 6. Hidden file inputs (file-input for full JSON, deck-import-input for deck upload)
+  ── 7. <script> at the end:
+  ──    Order: VERSION_LOG → APP_VERSION → JSON_VERSION →
+  ──    Constants → State → i18n → t() → Navigation →
+  ──    Scroll helpers → initSession → Hub helpers → Page functions →
+  ──    Write mode → Favorites → Hard Cards → Update checker → INIT
+
+  i18n SYSTEM (data-i18n attributes):
+  ── data-i18n="key"           → sets element.textContent = t(key) automatically
+  ── data-i18n-ph="key"        → sets element.placeholder = t(key) automatically
+  ── data-i18n-inner="k1|k2"   → sets innerHTML = t(k1)<br><em>t(k2)</em>
+  ── applyLanguage() drives ALL text via these attributes — no manual getElementById
+  ── Exception: dynamic content (counts, deck names, progress %) set directly in JS
+  ── New UI text: add data-i18n to HTML first, then add key to all 4 languages
+
+  SESSION ARCHITECTURE:
+  ── All learn modes (Flashcards, Spaced, Favorites, Hard, Write) share one session state:
+  ──   learnQueue, learnIndex, learnScoreGood, learnScoreBad, learnMode, cardFlipped
+  ── initSession(queue, mode, navLabel) initialises session — call before any showPage
+  ── summaryOrigin routes retry in retrySummary() — set to mode name ('flashcard'/'write')
+  ── No mode-specific state variables — violations must be refactored to use shared state
+
+  FUNCTION SIZE LIMIT:
+  ── Functions must not exceed 60 lines
+  ── Functions over 40 lines should be reviewed for split opportunities
+  ── Large page functions must be split into: data helper + label helper + logic
+  ── Example: openHub → _hubCounts() + _hubLabels() + _hubDisabled() + openHub()
+
+  NAMING CONVENTIONS FOR HELPERS:
+  ── Private/internal helpers: underscore prefix → _hubCounts(), _hubLabels()
+  ── Public page functions: Verb + Noun → openHub(), renderLibrary()
+  ── Session starters: start + ModeName → startFlashcards(), startWrite()
+
+  CONSTANTS (UPPER_SNAKE_CASE):
+  ── SPACED_REP_INTERVALS    = [1, 3, 7, 14, 30]
+  ── HARD_THRESHOLD          = 0.2   (errorRate cutoff for Hard Cards)
+  ── MAX_QUIZ_OPTIONS        = 4
+  ── JSON_VERSION            = '1.0'
+  ── UPDATE_CHECK_URL        = 'https://...'
+  ── UPDATE_CHECK_INTERVAL   = 20000
+  ── No magic numbers directly in code
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █                    NAMING CONVENTIONS                      █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  JAVASCRIPT:
+  ── Variables & functions:  camelCase        → deckName, openHub()
+  ── Constants:              UPPER_SNAKE_CASE → MAX_QUIZ_OPTIONS
+  ── Function names:         Verb + Noun      → openHub(), renderLibrary()
+  ── Private/internal vars:  underscore       → _wv, _nv (INIT block only)
+
+  HTML:
+  ── Element IDs:            kebab-case       → page-library, hub-deck-name
+  ── CSS classes:            kebab-case       → deck-item, hub-progress-fill
+  ── Page IDs:               prefix "page-"  → page-hub, page-quiz
+
+  LANGUAGE IN CODE:
+  ── Variables, functions, classes, IDs: always English
+  ── Comments:               English
+  ── i18n keys:              always English camelCase
+  ── No mixing within a category
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █               JSON COMPATIBILITY RULES                     █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  GOLDEN RULE:
+  ── JSON structure must NEVER change without a MAJOR version increment
+  ── Old JSON files must continue to work with the old app version
+
+  ON IMPORT:
+  ── App checks the "version" field in the JSON
+  ── Compatible → load normally → applyLanguage() → Library
+  ── Incompatible → error message with old + expected version
+  ── Missing "version" field → treat as "1.0"
+
+  NEW FIELDS (MINOR):
+  ── New optional fields allowed without MAJOR increment
+  ── Old app: ignores unknown fields (no crash)
+  ── New app: missing fields → set default value
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █                   UI CONSISTENCY RULES                     █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  COLOURS:
+  ── CSS variables only (var(--gold), var(--border) etc.) – never hex directly
+  ── No inline styles (style="...") – without exception
+  ── Exception: dynamic widths (style="width:62%") are allowed
+  ── New colours → document in Design Rules first, then create CSS variable
+
+  SPACING (allowed values from the grid):
+  ── 4, 8, 12, 14, 16, 18, 20, 22, 24, 28, 32, 40px
+  ── Other values only with a comment justification
+
+  NEW UI ELEMENTS:
+  ── Document in Blueprint first, then code
+  ── Must comply with all design and layout rules
+  ── No external CSS frameworks (no Bootstrap, Tailwind etc.)
+
+  HOVER / TOUCH:
+  ── Hover styles only under @media (hover: hover)
+  ── Touch devices: :active for tap feedback
+  ── No :hover on touch without @media guard
+
+  INLINE STYLE EXCEPTIONS (documented):
+  ── style="width:X%"          → progress bar fill (dynamic)
+  ── style="display:none/block"→ show/hide via JS (when no class fits)
+  ── style="visibility:hidden" → fc-actions initially hidden (flip logic)
+  ── All other inline styles   → rewrite as CSS class
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █             OPEN SOURCE / COLLABORATION RULES              █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  VERSIONING REQUIREMENT:
+  ── Every change – no matter how small – requires a VERSION_LOG entry
+  ── No push without a version entry
+  ── Blueprint changes = PATCH entry
+
+  GIT COMMITS:
+  ── Format: [TYPE] Short description
+  ── Example: [PATCH] Fix progress bar calculation
+  ── Example: [MINOR] Add quiz mode
+  ── Allowed types: MAJOR | MINOR | PATCH
+  ── One commit = one logical change
+
+  BRANCHES:
+  ── feature/name  → new features
+  ── fix/name      → bugfixes
+  ── docs/name     → Blueprint / documentation
+  ── No direct work on main
+
+  NEW FEATURE:
+  ── 1. Update Blueprint comment in source (PATCH for Blueprint change)
+  ── 2. Add i18n keys in all 4 languages
+  ── 3. Implement the feature
+  ── 4. Add VERSION_LOG entry (MINOR)
+  ── 5. Run syntax check: node --check on extracted JS (must return 0 errors)
+  ── 6. Commit and push
+
+  BUGFIX:
+  ── 1. Describe the bug in the commit
+  ── 2. Implement the fix
+  ── 3. Add VERSION_LOG entry (PATCH)
+  ── 4. Run syntax check: node --check on extracted JS (must return 0 errors)
+  ── 5. Commit and push
+-->
+
+
+<!--
+  ██████████████████████████████████████████████████████████████
+  █                                                            █
+  █                   QUALITY RULES                            █
+  █                                                            █
+  ██████████████████████████████████████████████████████████████
+
+  SYNTAX CHECK (mandatory before every release):
+  ── Extract JS from HTML and run: node --check <file.js>
+  ── Must return 0 errors — no exceptions
+  ── Catches: missing function declarations, stray braces, broken closures
+  ── A failed syntax check blocks the release — fix first, then version
+
+  DYNAMIC i18n KEYS:
+  ── Some keys are constructed at runtime, e.g.:
+  ──   t('writeResult' + result.charAt(0).toUpperCase() + result.slice(1))
+  ──   t(entry.key)  ← from VERSION_LOG entries
+  ── These are NOT caught by static key scanners
+  ── Rule: every dynamic key pattern must have a comment above it listing
+  ──   all possible resolved keys, e.g.:
+  ──   // dynamic: resolves to writeResultCorrect | writeResultAlmost | writeResultWrong
+
+  ORPHANED i18n KEYS:
+  ── Keys defined in i18n but never used (via t() or dynamic pattern) must be removed
+  ── Run a key audit before each MINOR release
+  ── Exception: keys that are dynamically resolved — document with comment (see above)
+
+  FUNCTION COMMENTS:
+  ── Every JS function must have a comment directly above it
+  ── Minimum format: // ── FUNCTION NAME ── short description
+  ── Complex functions: also document parameters and return value
+  ── No exceptions — undocumented functions will be flagged in review
+
+  NO DUPLICATE IDs:
+  ── Every HTML element id must be unique across the entire document
+  ── Deprecated pages (e.g. page-deck-detail) must be fully removed
+  ──   before new pages reuse similar IDs
+  ── Check with: grep -c 'id="X"' file — must return 1 for every ID
+
+  INLINE STYLE EXTENDED RULES:
+  ── Permitted exceptions (documented in UI CONSISTENCY RULES):
+  ──   style="width:X%"           → dynamic progress bar fill
+  ──   style="display:none/block" → JS show/hide when no class fits
+  ──   style="visibility:hidden"  → fc-actions initial state
+  ── ALL other inline styles are violations — move to a CSS class
+  ── font-size, padding, margin, color in inline styles = violation
+  ── Exception: dynamically computed values that cannot be a class
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlixCard</title><!-- updated dynamically from VERSION_LOG -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── CSS VARIABLES ── */
+    :root {
+      --bg:           #12100e;
+      --text-primary: #e8e0d0;
+      --gold:         #c8a96e;
+      --gold-dim:     #7a6540;
+      --border:       #2a2520;
+      --text-dim:     #5a5040;
+      --error:        #c0392b;
+      --success:      #4a7c59;
+      --surface:      #1a1714;
+
+      --font-display: 'Playfair Display', serif;
+      --font-body:    'DM Sans', sans-serif;
+      --font-mono:    'Space Mono', monospace;
+
+      --pad-h:        24px;
+      --pad-card:     18px;
+      --gap:          20px;
+      --nav-h:        48px;
+    }
+
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%; /* prevent iOS font inflation */
+    }
+
+    /* ── APP SHELL: centres content on wide screens ── */
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      /* desktop grid lines behind the app column */
+      background-image: repeating-linear-gradient(
+        0deg, transparent, transparent 39px,
+        #1a1714 39px, #1a1714 40px
+      );
+    }
+
+    /* ── PAGE SYSTEM ── */
+    .page {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      flex-direction: column;
+      background: var(--bg);
+    }
+    .page.active { display: flex; animation: fadeIn 200ms ease; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE BREAKPOINTS — Mobile first
+       ─ xs:  < 480px   (small phone)
+       ─ sm:  480–767px (large phone / phablet)
+       ─ md:  768–1023px (tablet)
+       ─ lg:  ≥ 1024px  (laptop / desktop)
+    ════════════════════════════════════════ */
+
+    /* ── XS (default, < 480px) ──────────────
+       Compact layout, full-width, max touch targets */
+    :root {
+      --nav-h:    48px;
+      --pad-h:    16px;
+      --pad-card: 14px;
+      --gap:      16px;
+    }
+
+    /* touch-friendly tap targets */
+    .btn          { padding: 14px 20px; font-size: 0.85rem; }
+    .deck-item    { padding: 14px var(--pad-h); min-height: 64px; }
+    .hub-item     { padding: 16px var(--pad-h); min-height: 64px; }
+    .mode-item    { padding: 16px var(--pad-h); min-height: 64px; }
+    .settings-item{ padding: 16px var(--pad-h); min-height: 56px; }
+    .card-item    { padding: 14px var(--pad-h); }
+    .nav-back     { padding: 12px 0; font-size: 0.7rem; }
+
+    /* flashcard full height on small phone */
+    .flashcard-inner { min-height: 200px; }
+    .flashcard-text  { font-size: 1.4rem; }
+
+    /* quiz options full width */
+    .quiz-option { padding: 16px var(--pad-h); min-height: 56px; }
+
+    /* summary stats stacked if very narrow */
+    @media (max-width: 360px) {
+      .summary-stats { flex-direction: column; }
+      .summary-stat  { border-right: none; border-bottom: 1px solid var(--border); }
+      .summary-stat:last-child { border-bottom: none; }
+
+      .detail-stats-row { flex-wrap: wrap; }
+      .detail-stat      { flex: 1 1 50%; min-width: 50%; }
+    }
+
+    /* ── SM (480px – 767px, large phone) ────*/
+    @media (min-width: 480px) {
+      :root {
+        --pad-h:    20px;
+        --pad-card: 18px;
+        --gap:      20px;
+      }
+      body           { font-size: 0.9rem; }
+      .btn           { padding: 14px 22px; } /* 14px = grid value, 22px = grid value */
+      .flashcard-text{ font-size: 1.7rem; }
+      .flashcard-inner { min-height: 220px; }
+    }
+
+    /* ── MD (768px – 1023px, tablet) ────────*/
+    @media (min-width: 768px) {
+      :root {
+        --nav-h:    56px;
+        --pad-h:    28px;
+        --pad-card: 22px;
+        --gap:      24px;
+      }
+      body { font-size: 0.95rem; }
+
+      /* centre app column, add side borders */
+      .page {
+        max-width: 600px;
+        border-left:  1px solid var(--border);
+        border-right: 1px solid var(--border);
+      }
+
+      .btn            { padding: 14px 28px; font-size: 0.85rem; } /* 14px = grid value */
+      .nav-h          { height: 56px; }
+      .nav-brand      { font-size: 1.15rem; }
+      .nav-back       { font-size: 0.68rem; }
+      .flashcard-inner{ min-height: 260px; }
+      .flashcard-text { font-size: 2rem; }
+
+      /* two-column card add form on tablet */
+      .add-card-row { flex-direction: row; }
+
+      /* larger hero numbers */
+      .library-stat-num  { font-size: 1.8rem; }
+      .stats-hero-num    { font-size: 2.2rem; }
+      .summary-stat-num  { font-size: 2.2rem; }
+      .detail-stat-num   { font-size: 1.5rem; }
+    }
+
+    /* ── LG (≥ 1024px, laptop / desktop) ───*/
+    @media (min-width: 1024px) {
+      :root {
+        --nav-h:    56px;
+        --pad-h:    32px;
+        --pad-card: 24px;
+        --gap:      28px;
+      }
+      body { font-size: 0.95rem; }
+
+      .page {
+        max-width: 680px;
+        border-left:  1px solid var(--border);
+        border-right: 1px solid var(--border);
+      }
+
+      /* show grid lines behind app column only on desktop */
+      .app-shell {
+        background-image: repeating-linear-gradient(
+          0deg, transparent, transparent 39px,
+          #1a1714 39px, #1a1714 40px
+        );
+      }
+
+      .btn            { padding: 12px 28px; font-size: 0.85rem; }
+      .flashcard-inner{ min-height: 280px; }
+      .flashcard-text { font-size: 2.2rem; }
+      .deck-item      { padding: 18px var(--pad-h); }
+      .hub-item       { padding: 18px var(--pad-h); }
+      .mode-item      { padding: 18px var(--pad-h); }
+      .card-item      { padding: 16px var(--pad-h); }
+
+      .library-stat-num  { font-size: 1.8rem; }
+      .stats-hero-num    { font-size: 2.4rem; }
+      .summary-stat-num  { font-size: 2.4rem; }
+    }
+
+    /* ── TOUCH DEVICE: remove hover side effects ── */
+    @media (hover: hover) {
+      .deck-item:hover,
+      .mode-item:hover,
+      .settings-item:hover { background: var(--surface); }
+    }
+
+    @media (hover: none) {
+      .deck-item:hover,
+      .hub-item:hover,
+      .mode-item:hover,
+      .settings-item:hover { background: transparent; }
+      /* keep active state for tap feedback */
+      .deck-item:active,
+      .hub-item:active:not(.hub-disabled),
+      .mode-item:active,
+      .settings-item:active { background: var(--surface); }
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: sticky;
+      top: 0;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--pad-h);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      z-index: 100;
+    }
+
+    .nav-brand {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+    }
+
+    .nav-label {
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .nav-back {
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: var(--font-body);
+      transition: color 150ms;
+    }
+
+    .nav-back:hover { color: var(--gold); }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--border); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: border-color 150ms, color 150ms, background 150ms;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover { border-color: var(--text-dim); }
+
+    .btn-primary {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .btn-primary:hover {
+      background: var(--gold);
+      color: var(--bg);
+    }
+
+    .btn-ghost {
+      border-color: transparent;
+      color: var(--text-dim);
+    }
+
+    .btn-ghost:hover { color: var(--text-primary); border-color: var(--border); }
+
+    /* ── PROGRESS BAR ── */
+    .progress-track {
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      transition: width 400ms ease;
+    }
+
+    /* ── UNSAVED BANNER ── */
+    .unsaved-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px var(--pad-h); /* off-grid: unsaved banner — 10px fits narrow strip */
+      background: var(--surface);
+      border-bottom: 1px solid var(--gold-dim);
+      font-size: 0.75rem;
+      color: var(--gold);
+    }
+
+    .unsaved-banner.visible { display: flex; }
+
+    /* ════════════════════════════════════════
+       PAGE 0 – WELCOME
+    ════════════════════════════════════════ */
+    #page-welcome {
+      align-items: center;
+      justify-content: center;
+      padding: var(--pad-h);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* subtle grain texture overlay */
+    #page-welcome::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.4;
+    }
+
+    .welcome-inner {
+      max-width: 380px;
+      width: 100%;
+      position: relative;
+    }
+
+    .welcome-rule {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      margin: 0 auto 28px;
+      animation: expandRule 600ms ease forwards;
+    }
+
+    @keyframes expandRule {
+      from { width: 0; opacity: 0; }
+      to   { width: 40px; opacity: 1; }
+    }
+
+    .welcome-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 8vw, 4rem);
+      color: var(--text-primary);
+      line-height: 1.05;
+      margin-bottom: 8px;
+      opacity: 0;
+      animation: slideUp 500ms ease 100ms forwards;
+    }
+
+    .welcome-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .welcome-sub {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-bottom: 48px;
+      letter-spacing: 0.5px;
+      opacity: 0;
+      animation: slideUp 500ms ease 200ms forwards;
+    }
+
+    .welcome-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      opacity: 0;
+      animation: slideUp 500ms ease 300ms forwards;
+    }
+
+    .welcome-hint {
+      margin-top: 32px;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      opacity: 0;
+      animation: slideUp 500ms ease 400ms forwards;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ════════════════════════════════════════
+       PAGE 1 – LIBRARY
+    ════════════════════════════════════════ */
+    #page-library { flex-direction: column; }
+
+    .library-header {
+      padding: var(--gap) var(--pad-h) 16px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .library-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      line-height: 1.1;
+    }
+
+    .library-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .library-stat {
+      text-align: right;
+    }
+
+    .library-stat-num {
+      font-family: var(--font-mono);
+      font-size: 1.6rem;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .library-stat-label {
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* deck list */
+    .deck-list {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .deck-list.at-bottom { }
+
+    .deck-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px var(--pad-h);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 150ms;
+    }
+
+    .deck-item:hover { background: var(--surface); }
+
+    .deck-num {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--gold-dim);
+      min-width: 20px;
+      flex-shrink: 0;
+    }
+
+    .deck-info { flex: 1; min-width: 0; }
+
+    .deck-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 2px; /* off-grid: sub-pixel optical gap between name and description */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .deck-desc {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 6px; /* off-grid: tight gap before deck meta row — 8px too loose */
+    }
+
+    .deck-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px; /* off-grid: library header stat gap — 8px too tight, 12px too loose */
+    }
+
+    .deck-progress-track {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .deck-progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+    }
+
+    .deck-count {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .deck-arrow {
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    /* empty state */
+    .library-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--text-dim);
+      padding: var(--pad-h);
+      text-align: center;
+    }
+
+    .library-empty-icon {
+      font-size: 2rem;
+      opacity: 0.4;
+      margin-bottom: 8px;
+    }
+
+    .library-empty-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--text-dim);
+    }
+
+    .library-empty-sub {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      opacity: 0.7;
+    }
+
+    /* library footer */
+    .library-footer {
+      padding: 16px var(--pad-h);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    /* Equal-width footer buttons */
+    .library-footer .btn-action {
+      flex: 1;
+    }
+
+    /* ── FILE INPUT HIDDEN ── */
+    #file-input { display: none; }
+
+    /* ════════════════════════════════════════
+       UPDATE OVERLAY
+    ════════════════════════════════════════ */
+    #update-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(18, 16, 14, 0.92);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+      padding: var(--pad-h);
+    }
+
+    #update-overlay.visible { display: flex; }
+
+    .update-spinner {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--border);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 800ms linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .update-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--text-primary);
+    }
+
+    .update-sub {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .update-versions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    .update-ver-old { color: var(--text-dim); }
+    .update-ver-arrow { color: var(--text-dim); }
+    .update-ver-new { color: var(--gold); }
+
+    /* ════════════════════════════════════════
+       PAGE 5 – MAIN INTERFACE / HUB
+    ════════════════════════════════════════ */
+    #page-hub { flex-direction: column; }
+
+    .hub-header {
+      padding: var(--gap) var(--pad-h) 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hub-deck-name {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-style: italic;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .hub-deck-sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .hub-progress {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hub-progress-track {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .hub-progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+    }
+
+    .hub-progress-pct {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--gold);
+      min-width: 32px;
+      text-align: right;
+    }
+
+    .hub-section-label {
+      padding: 16px var(--pad-h) 8px;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hub-list { flex: 1; overflow-y: auto; }
+
+    .hub-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px var(--pad-h);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 150ms;
+    }
+
+    @media (hover: hover) {
+      .hub-item:hover:not(.hub-disabled) { background: var(--surface); }
+    }
+
+    .hub-disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .hub-icon {
+      font-size: 1.2rem;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .hub-info { flex: 1; }
+
+    .hub-name {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .hub-sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 1px; /* off-grid: optical line-height correction for small sub-label text */
+    }
+
+    .hub-arrow {
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+
+    /* divider between learn modes and tools */
+    .hub-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0;
+    }
+
+    /* ── Session length chips ── */
+    .hub-chips {
+      display: flex;
+      gap: 6px; /* off-grid: chip gap — 8px too wide for compact chip row */
+    }
+    .hub-chip {
+      padding: 3px 10px; /* off-grid: chip compact padding — standard grid too large */
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 150ms;
+    }
+    .hub-chip.active {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    @media (hover: hover) {
+      .hub-chip:not(.active):hover {
+        border-color: var(--text-dim);
+        color: var(--text-primary);
+      }
+    }
+
+    /* ── Direction row (Standard / Reversed / Random) ── */
+    .hub-direction-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px var(--pad-h);
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+    #page-deck-detail { flex-direction: column; }
+
+    .detail-header {
+      padding: var(--gap) var(--pad-h) 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-style: italic;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .detail-desc {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .detail-stats-row {
+      display: flex;
+      border: 1px solid var(--border);
+    }
+
+    .detail-stat {
+      flex: 1;
+      padding: 12px var(--pad-card);
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .detail-stat:last-child { border-right: none; }
+
+    .detail-stat-num {
+      font-family: var(--font-mono);
+      font-size: 1.3rem;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .detail-stat-label {
+      font-size: 0.6rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .detail-progress {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .detail-progress-track {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .detail-progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      transition: width 400ms ease;
+    }
+
+    .detail-progress-pct {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--gold);
+      min-width: 32px;
+      text-align: right;
+    }
+
+    .mode-section-label {
+      padding: 16px var(--pad-h) 8px;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mode-list { flex: 1; }
+
+    .mode-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px var(--pad-h);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 150ms;
+    }
+
+    .mode-item:hover { background: var(--surface); }
+
+    .mode-item.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .mode-icon {
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .mode-info { flex: 1; }
+
+    .mode-name {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .mode-sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .mode-arrow { color: var(--text-dim); font-size: 0.75rem; }
+
+    .detail-footer {
+      padding: 16px var(--pad-h);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-danger { border-color: var(--error); color: var(--error); }
+    .btn-danger:hover { background: var(--error); color: #fff; }
+
+    /* ════════════════════════════════════════
+       PAGE 3 – CREATE / EDIT DECK
+    ════════════════════════════════════════ */
+    #page-create-deck { flex-direction: column; }
+
+    .form-body {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: var(--gap) var(--pad-h);
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+
+    .form-label {
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .form-input,
+    .form-textarea {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      padding: 12px var(--pad-card);
+      width: 100%;
+      outline: none;
+      transition: border-color 150ms;
+      resize: none;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus { border-color: var(--gold); }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder { color: var(--text-dim); }
+
+    .form-hint { font-size: 0.7rem; color: var(--text-dim); }
+
+    .form-error {
+      font-size: 0.75rem;
+      color: var(--error);
+      display: none;
+    }
+
+    .form-error.visible { display: block; }
+
+    .form-footer {
+      padding: 16px var(--pad-h);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+    }
+
+    /* ════════════════════════════════════════
+       PAGE 4 – MANAGE CARDS
+    ════════════════════════════════════════ */
+    #page-manage-cards { flex-direction: column; }
+
+    /* add card form at top */
+    .add-card-form {
+      padding: var(--gap) var(--pad-h) 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: var(--gap);
+    }
+
+    .add-card-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .add-card-row .form-input { flex: 1; }
+
+    .add-card-section-label {
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 12px var(--pad-h) 0;
+    }
+
+    /* card list */
+    .card-list {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .card-list.at-bottom { }
+
+    .card-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px var(--pad-h);
+      border-bottom: 1px solid var(--border);
+      transition: background 150ms;
+    }
+
+    .card-item:hover { background: var(--surface); }
+
+    .card-sides { flex: 1; min-width: 0; }
+
+    .card-front {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-back {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-status {
+      font-size: 0.65rem;
+      padding: 2px 8px; /* off-grid: card status badge — minimal pill padding */
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .card-status.learned {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .card-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: border-color 150ms, color 150ms;
+    }
+
+    .card-btn:hover { border-color: var(--text-primary); color: var(--text-primary); }
+    .card-btn.delete:hover { border-color: var(--error); color: var(--error); }
+    .card-btn.fav        { color: var(--text-dim); }
+    .card-btn.fav.active { color: var(--gold); border-color: var(--gold); }
+
+    /* edit card inline overlay */
+    .card-edit-row {
+      padding: 12px var(--pad-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--gold-dim);
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-edit-row.visible { display: flex; }
+
+    .card-edit-inputs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .card-edit-inputs .form-input { flex: 1; }
+
+    .card-edit-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    /* empty card list */
+    .cards-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--text-dim);
+      padding: var(--pad-h);
+      text-align: center;
+    }
+
+    .cards-empty-icon { font-size: 1.8rem; opacity: 0.3; }
+
+    .cards-empty-title {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--text-dim);
+    }
+
+    /* ════════════════════════════════════════
+       PAGE 6 – FLASHCARD / LEARN MODE
+    ════════════════════════════════════════ */
+    #page-flashcard { flex-direction: column; }
+
+    .learn-progress-bar {
+      height: 2px;
+      background: var(--border);
+    }
+
+    .learn-progress-fill {
+      height: 100%;
+      background: var(--gold);
+      transition: width 400ms ease;
+    }
+
+    .learn-counter {
+      padding: 12px var(--pad-h) 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .learn-counter-text {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+
+    .learn-score {
+      display: flex;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+    }
+
+    .learn-score-good  { color: var(--success); }
+    .learn-score-bad   { color: var(--error); }
+
+    /* flip card */
+    .flashcard-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--pad-h);
+      cursor: pointer;
+    }
+
+    .flashcard-wrap {
+      width: 100%;
+      max-width: 480px;
+      perspective: 1000px;
+    }
+
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      min-height: 220px;
+      transform-style: preserve-3d;
+      transition: transform 400ms ease;
+    }
+    .flashcard-inner.flipped { transform: rotateY(180deg); }
+    .flashcard-inner.no-transition { transition: none !important; }
+
+    .flashcard-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      padding: var(--pad-card);
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .flashcard-face.back {
+      transform: rotateY(180deg);
+      border-color: var(--gold-dim);
+    }
+
+    .flashcard-side-label {
+      font-size: 0.58rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .flashcard-text {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 5vw, 2.2rem);
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .flashcard-hint {
+      margin-top: 20px;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+
+    /* rating buttons */
+    .learn-actions {
+      padding: 16px var(--pad-h);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-bad {
+      flex: 1;
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    .btn-bad:hover { background: var(--error); color: #fff; }
+
+    .btn-good {
+      flex: 1;
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .btn-good:hover { background: var(--success); color: #fff; }
+
+    .learn-actions-hidden { visibility: hidden; }
+
+    /* session summary */
+    .summary-page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--pad-h);
+      text-align: center;
+      gap: 20px;
+    }
+
+    .summary-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-style: italic;
+      color: var(--text-primary);
+    }
+
+    .summary-stats {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+    }
+
+    .summary-stat {
+      padding: 16px 28px;
+      border-right: 1px solid var(--border);
+    }
+
+    .summary-stat:last-child { border-right: none; }
+
+    .summary-stat-num {
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .summary-stat-num.good { color: var(--success); }
+    .summary-stat-num.bad  { color: var(--error); }
+
+    .summary-stat-label {
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .summary-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    /* ════════════════════════════════════════
+       PAGE 7 – QUIZ MODE
+    ════════════════════════════════════════ */
+    #page-quiz { flex-direction: column; }
+
+    .quiz-question-area {
+      padding: var(--gap) var(--pad-h);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .quiz-question-label {
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .quiz-question-text {
+      font-family: var(--font-display);
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .quiz-options {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px var(--pad-h);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 150ms;
+    }
+
+    @media (hover: hover) {
+      .quiz-option:hover:not(.answered) { background: var(--surface); }
+    }
+
+    .quiz-option.correct {
+      background: rgba(74, 124, 89, 0.15);
+      border-color: var(--success);
+    }
+
+    .quiz-option.wrong {
+      background: rgba(192, 57, 43, 0.12);
+      border-color: var(--error);
+    }
+
+    .quiz-option-letter {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      width: 20px;
+      flex-shrink: 0;
+    }
+
+    .quiz-option-text {
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .quiz-option-icon {
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .quiz-footer {
+      padding: 16px var(--pad-h);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ════════════════════════════════════════
+       PAGE 7b – WRITE MODE
+    ════════════════════════════════════════ */
+    #page-write { flex-direction: column; }
+
+    .write-input-area {
+      display: flex;
+      gap: 12px;
+      padding: 20px var(--pad-h) 0;
+      align-items: stretch;
+    }
+    .write-input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      padding: 14px var(--pad-card);
+      outline: none;
+      transition: border-color 150ms;
+      border-radius: 0;
+      -webkit-appearance: none;
+    }
+    .write-input:focus { border-color: var(--gold); }
+    .write-input.correct { border-color: var(--success); }
+    .write-input.almost  { border-color: var(--gold); }
+    .write-input.wrong   { border-color: var(--error); }
+    .write-submit {
+      flex-shrink: 0;
+      padding: 0 20px;
+      font-size: 1.1rem;
+    }
+
+    .write-result {
+      padding: 20px var(--pad-h);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .write-result-badge {
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      padding: 6px 12px; /* off-grid: write result badge — compact label sizing */
+      border: 1px solid;
+      display: inline-block;
+      align-self: flex-start;
+    }
+    .write-result-badge.correct { color: var(--success); border-color: var(--success); }
+    .write-result-badge.almost  { color: var(--gold);    border-color: var(--gold); }
+    .write-result-badge.wrong   { color: var(--error);   border-color: var(--error); }
+
+    .write-result-correct {
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .write-result-correct strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    #page-stats { flex-direction: column; }
+
+    .stats-header {
+      padding: var(--gap) var(--pad-h) 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      line-height: 1.1;
+    }
+
+    .stats-title em { font-style: italic; color: var(--gold); }
+
+    /* hero numbers row */
+    .stats-hero {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-hero-item {
+      flex: 1;
+      padding: 20px var(--pad-h);
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .stats-hero-item:last-child { border-right: none; }
+
+    .stats-hero-num {
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .stats-hero-label {
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-top: 6px; /* off-grid: optical gap under hero stat number — 8px too large */
+      padding: 16px var(--pad-h) 8px;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-deck-list {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .stats-deck-list.at-bottom { }
+
+    .stats-deck-item {
+      padding: 14px var(--pad-h);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-deck-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .stats-deck-name {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .stats-deck-figures {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .stats-deck-pct {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--gold);
+    }
+
+    .stats-deck-err {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--error);
+    }
+
+    .stats-bar-track {
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .stats-bar-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+    }
+
+    .stats-bar-err {
+      height: 100%;
+      background: var(--error);
+      border-radius: 2px;
+    }
+
+    .stats-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      padding: var(--pad-h);
+      text-align: center;
+    }
+
+    /* ════════════════════════════════════════
+       SCROLL-DOWN ARROW (WhatsApp-style)
+       Appears when scrollable list has more content below.
+       Parent must have position: relative.
+    ════════════════════════════════════════ */
+    .scroll-arrow {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--gold);
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 1;
+      transition: opacity 200ms ease;
+      pointer-events: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      user-select: none;
+    }
+    .scroll-arrow.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Containers that host a scroll-arrow need relative positioning */
+    .deck-list-wrap,
+    .card-list-wrap,
+    .stats-deck-list-wrap,
+    .settings-scroll-wrap {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #page-settings { flex-direction: column; }
+
+    /* scrollable content area with fade-out scroll hint */
+    .settings-scroll {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
+    .settings-scroll.at-bottom { }
+
+    .settings-section {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-section-label {
+      padding: 16px var(--pad-h) 8px;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .settings-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px var(--pad-h);
+      border-top: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 150ms;
+    }
+
+    .settings-item:hover { background: var(--surface); }
+
+    .settings-item-left { display: flex; align-items: center; gap: 12px; }
+    .settings-item-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    .settings-item-label {
+      font-size: 0.88rem;
+      color: var(--text-primary);
+    }
+
+    .settings-item-sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .settings-item-value {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--gold);
+    }
+
+    .settings-item-arrow { color: var(--text-dim); font-size: 0.75rem; }
+
+    /* language selector */
+    .lang-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 12px var(--pad-h) 16px;
+    }
+
+    .lang-btn {
+      padding: 10px; /* off-grid: lang-btn square padding — 8px too small, 12px too large */
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-dim);
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 150ms;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+    /* ISO code (EN, DE, FR, ES) rendered in monospace */
+    .lang-btn .lang-code {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--gold-dim);
+      display: block;
+      letter-spacing: 2px;
+      margin-bottom: 2px; /* off-grid: sub-pixel gap between ISO code and language name */
+
+    .lang-btn:hover { border-color: var(--text-dim); color: var(--text-primary); }
+    .lang-btn.active { border-color: var(--gold); color: var(--gold); }
+
+    /* version log */
+    .version-log {
+      border: 1px solid var(--border);
+      margin: 0 var(--pad-h) 8px;
+    }
+
+    .version-log-item {
+      display: grid;
+      grid-template-columns: 3.4rem 3.8rem 1fr;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      align-items: start;
+    }
+
+    .version-log-item:last-child { border-bottom: none; }
+
+    .version-log-num {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+      padding-top: 1px; /* off-grid: optical vertical alignment with badge */
+    }
+
+    .version-log-badge {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding-top: 2px; /* off-grid: optical vertical alignment */
+    }
+
+    .version-log-desc {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+
+    /* danger zone */
+    .settings-danger {
+      padding: 16px var(--pad-h);
+    }
+
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+<!-- ══════════════════════════════════════
+     UPDATE OVERLAY (shown when new version detected)
+══════════════════════════════════════ -->
+<div id="update-overlay">
+  <div class="update-spinner"></div>
+  <div class="update-title" id="update-title-el" data-i18n-inner="updateTitle|updateTitleEm">New Update<br><em>Deploying…</em></div>
+  <div class="update-versions">
+    <span class="update-ver-old" id="update-ver-old">—</span>
+    <span class="update-ver-arrow">→</span>
+    <span class="update-ver-new" id="update-ver-new">—</span>
+  </div>
+  <div class="update-sub" id="update-sub-el" data-i18n="updateSub">
+    A new version is being deployed.<br>
+    The page will reload automatically when ready.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 0 – WELCOME
+══════════════════════════════════════ -->
+<div id="page-welcome" class="page active">
+  <div class="welcome-inner">
+    <div class="welcome-rule"></div>
+    <h1 class="welcome-title">Flix<em>Card</em></h1>
+    <p style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-dim);letter-spacing:1.5px;margin-top:-8px;margin-bottom:4px;" id="welcome-version">v0.5.1</p>
+    <p class="welcome-sub">Your personal vocabulary trainer</p>
+
+    <div class="welcome-actions">
+      <button class="btn btn-primary" id="welcome-load-btn" data-i18n="loadDataBtn" onclick="triggerFileImport()">↑ Load existing data</button>
+      <button class="btn" id="welcome-fresh-btn" data-i18n="startFreshBtn" onclick="startFresh()">Start fresh</button>
+    </div>
+
+    <p class="welcome-hint" id="welcome-hint" data-i18n="welcomeHint">Your data stays on your device — no account needed</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 1 – LIBRARY
+══════════════════════════════════════ -->
+<div id="page-library" class="page">
+
+  <!-- unsaved changes banner -->
+  <div class="unsaved-banner" id="unsaved-banner">
+    <span id="unsaved-label" data-i18n="unsavedLabel">▪ Unsaved changes</span>
+    <button class="btn btn-primary" id="unsaved-save-btn" data-i18n="saveBtnShort" style="padding: 6px 16px; font-size:0.75rem;" onclick="exportJSON()">Save JSON</button>
+  </div>
+
+  <!-- nav -->
+  <nav class="nav">
+    <span class="nav-brand">FlixCard <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--gold-dim);letter-spacing:1px;" id="nav-version">v0.5.1</span></span>
+    <span class="nav-label" id="nav-library-label" data-i18n="navLibrary">Library</span>
+  </nav>
+
+  <!-- header -->
+  <div class="library-header">
+    <div>
+      <div class="library-title" id="library-title-el">Your<br><em>Decks</em></div>
+    </div>
+    <div class="library-stat">
+      <div class="library-stat-num" id="lib-total-pct">—</div>
+      <div class="library-stat-label" id="lib-overall-label" data-i18n="libOverallLabel">Overall</div>
+    </div>
+  </div>
+
+  <!-- deck list -->
+  <div class="deck-list-wrap">
+    <div class="deck-list" id="deck-list">
+      <!-- populated by JS -->
+    </div>
+    <div class="scroll-arrow hidden" id="deck-list-arrow">&#8595;</div>
+  </div>
+
+  <!-- library footer -->
+  <div class="library-footer">
+    <button class="btn btn-primary btn-action" id="lib-new-deck-btn" data-i18n="btnNewDeck" onclick="openNewDeckForm()">+ New Deck</button>
+    <button class="btn btn-ghost   btn-action" id="lib-upload-btn" data-i18n="btnUploadDeck"   onclick="triggerDeckImport()">↑ Upload Deck</button>
+    <button class="btn btn-ghost   btn-action" id="lib-settings-btn" data-i18n="btnSettings" onclick="openSettings()">⚙</button>
+  </div>
+
+  <!-- hidden file input for deck upload -->
+  <input type="file" id="deck-import-input" accept=".json" onchange="importDeck(event)" style="display:none;">
+
+</div>
+
+<!-- hidden file input for JSON import -->
+<input type="file" id="file-input" accept=".json" onchange="importJSON(event)">
+
+<!-- ══════════════════════════════════════
+     PAGE 6 – FLASHCARD / LEARN MODE
+══════════════════════════════════════ -->
+<div id="page-flashcard" class="page">
+
+  <nav class="nav">
+    <button class="nav-back" onclick="exitLearnMode()">‹ Deck</button>
+    <span class="nav-label" id="flashcard-nav-label">Flashcards</span>
+  </nav>
+
+  <!-- top progress bar -->
+  <div class="learn-progress-bar">
+    <div class="learn-progress-fill" id="fc-progress-fill" style="width:0%"></div>
+  </div>
+
+  <!-- counter + live score -->
+  <div class="learn-counter">
+    <span class="learn-counter-text" id="fc-counter">1 / 1</span>
+    <div class="learn-score">
+      <span class="learn-score-good" id="fc-score-good">✓ 0</span>
+      <span class="learn-score-bad"  id="fc-score-bad">✕ 0</span>
+    </div>
+  </div>
+
+  <!-- flip card -->
+  <div class="flashcard-area" onclick="flipCard()">
+    <div class="flashcard-wrap">
+      <div class="flashcard-inner" id="fc-inner">
+        <div class="flashcard-face front">
+          <div class="flashcard-side-label" id="fc-label-front" data-i18n="fcSideFront">Front</div>
+          <div class="flashcard-text" id="fc-front-text">—</div>
+          <div class="flashcard-hint" id="fc-tap-hint" data-i18n="fcTapHint">Tap to reveal</div>
+        </div>
+        <div class="flashcard-face back">
+          <div class="flashcard-side-label" id="fc-label-back" data-i18n="fcSideBack">Back</div>
+          <div class="flashcard-text" id="fc-back-text">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- rating buttons (hidden until card is flipped) -->
+  <div class="learn-actions" id="fc-actions" style="visibility:hidden;">
+    <button class="btn btn-bad"  id="fc-btn-bad" data-i18n="fcBtnBad"  onclick="event.stopPropagation(); rateCard(false)">✕ Not quite</button>
+    <button class="btn btn-good" id="fc-btn-good" data-i18n="fcBtnGood" onclick="event.stopPropagation(); rateCard(true)">✓ Got it</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 6b – SESSION SUMMARY
+══════════════════════════════════════ -->
+<div id="page-summary" class="page">
+
+  <nav class="nav">
+    <span class="nav-brand">FlixCard</span>
+    <span class="nav-label" id="sum-nav-label" data-i18n="navSummary">Summary</span>
+  </nav>
+
+  <div class="summary-page">
+    <div class="summary-title" id="sum-title-el" data-i18n-inner="sumTitle|sumTitleEm">Session<br><em>Complete</em></div>
+
+    <div class="summary-stats">
+      <div class="summary-stat">
+        <div class="summary-stat-num good" id="sum-good">0</div>
+        <div class="summary-stat-label" id="sum-correct-label" data-i18n="sumCorrect">Correct</div>
+      </div>
+      <div class="summary-stat">
+        <div class="summary-stat-num bad" id="sum-bad">0</div>
+        <div class="summary-stat-label" id="sum-missed-label" data-i18n="sumMissed">Missed</div>
+      </div>
+      <div class="summary-stat">
+        <div class="summary-stat-num" id="sum-pct" style="color:var(--gold)">0%</div>
+        <div class="summary-stat-label" id="sum-score-label" data-i18n="sumScore">Score</div>
+      </div>
+    </div>
+
+    <div class="summary-actions">
+      <button class="btn btn-primary" id="sum-retry-btn" data-i18n="sumTryAgain" onclick="retrySummary()">Try again</button>
+      <button class="btn btn-ghost" id="sum-back-btn" data-i18n="sumBackDeck" onclick="openHub(currentDeckId)">Back to Deck</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 7 – QUIZ MODE
+══════════════════════════════════════ -->
+<div id="page-quiz" class="page">
+
+  <nav class="nav">
+    <button class="nav-back" onclick="exitLearnMode()">‹ Deck</button>
+    <span class="nav-label" id="quiz-nav-label">Quiz</span>
+  </nav>
+
+  <!-- top progress bar -->
+  <div class="learn-progress-bar">
+    <div class="learn-progress-fill" id="quiz-progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="learn-counter">
+    <span class="learn-counter-text" id="quiz-counter">1 / 1</span>
+    <div class="learn-score">
+      <span class="learn-score-good" id="quiz-score-good">✓ 0</span>
+      <span class="learn-score-bad"  id="quiz-score-bad">✕ 0</span>
+    </div>
+  </div>
+
+  <!-- question -->
+  <div class="quiz-question-area">
+    <div class="quiz-question-label" id="quiz-question-label" data-i18n="quizQuestionLabel">What is the translation?</div>
+    <div class="quiz-question-text" id="quiz-question">—</div>
+  </div>
+
+  <!-- answer options -->
+  <div class="quiz-options" id="quiz-options">
+    <!-- populated by JS -->
+  </div>
+
+  <!-- next button (shown after answering) -->
+  <div class="quiz-footer" id="quiz-footer" style="display:none;">
+    <button class="btn btn-primary" id="quiz-next-btn" data-i18n="quizNext" style="width:100%;" onclick="nextQuizQuestion()">Next →</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 7b – WRITE MODE
+══════════════════════════════════════ -->
+<div id="page-write" class="page">
+
+  <nav class="nav">
+    <button class="nav-back" onclick="exitLearnMode()">‹ Deck</button>
+    <span class="nav-label" id="write-nav-label">Write</span>
+  </nav>
+
+  <!-- progress bar -->
+  <div class="learn-progress-bar">
+    <div class="learn-progress-fill" id="write-progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="learn-counter">
+    <span class="learn-counter-text" id="write-counter">1 / 1</span>
+    <div class="learn-score">
+      <span class="learn-score-good" id="write-score-good">✓ 0</span>
+      <span class="learn-score-bad"  id="write-score-bad">✕ 0</span>
+    </div>
+  </div>
+
+  <!-- question -->
+  <div class="quiz-question-area">
+    <div class="quiz-question-label" id="write-question-label" data-i18n="writeQuestionLabel">Write the answer</div>
+    <div class="quiz-question-text"  id="write-question">—</div>
+  </div>
+
+  <!-- input area -->
+  <div class="write-input-area">
+    <input
+      class="write-input"
+      id="write-input" data-i18n-ph="writeInputPh"
+      type="text"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      placeholder="Type your answer…"
+      onkeydown="if(event.key==='Enter') checkWriteAnswer()"
+    >
+    <button class="btn btn-primary write-submit" id="write-submit-btn" onclick="checkWriteAnswer()">→</button>
+  </div>
+
+  <!-- result (shown after submitting) -->
+  <div class="write-result" id="write-result" style="display:none;">
+    <div class="write-result-badge" id="write-result-badge"></div>
+    <div class="write-result-correct" id="write-result-correct"></div>
+    <button class="btn btn-primary" id="write-next-btn" data-i18n="quizNext" style="width:100%;margin-top:16px;" onclick="nextWriteCard()">Next →</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 5 – MAIN INTERFACE / HUB
+══════════════════════════════════════ -->
+<div id="page-hub" class="page">
+
+  <nav class="nav">
+    <button class="nav-back" onclick="showPage('page-library'); renderLibrary()">‹ Library</button>
+    <span class="nav-label" id="hub-nav-label">Deck</span>
+  </nav>
+
+  <!-- deck context -->
+  <div class="hub-header">
+    <div class="hub-deck-name" id="hub-deck-name">—</div>
+    <div class="hub-deck-sub"  id="hub-deck-sub"></div>
+    <div class="hub-progress">
+      <div class="hub-progress-track">
+        <div class="hub-progress-fill" id="hub-progress-fill" style="width:0%"></div>
+      </div>
+      <div class="hub-progress-pct" id="hub-progress-pct">0%</div>
+    </div>
+  </div>
+
+  <div class="hub-section-label" id="hub-label-learn" data-i18n="hubLearnLabel">Learn</div>
+
+  <div class="hub-list">
+
+    <!-- FLASHCARDS -->
+    <div class="hub-item" id="hub-flashcard" onclick="startFlashcards(currentDeckId, 'all')">
+      <div class="hub-icon">↔</div>
+      <div class="hub-info">
+        <div class="hub-name" id="hub-flashcard-name" data-i18n="modeFlashcard">Flashcards</div>
+        <div class="hub-sub"  id="hub-flashcard-sub" data-i18n="modeFlashcardSub">Flip cards, rate yourself</div>
+        <div class="hub-chips" id="hub-session-chips" onclick="event.stopPropagation()">
+          <button class="hub-chip active" id="chip-10" data-i18n="chip10"  onclick="setSessionLength(10)">10</button>
+          <button class="hub-chip"        id="chip-20" data-i18n="chip20"  onclick="setSessionLength(20)">20</button>
+          <button class="hub-chip"        id="chip-all" data-i18n="chipAll" onclick="setSessionLength(0)">All</button>
+        </div>
+      </div>
+      <div class="hub-arrow">›</div>
+    </div>
+
+    <!-- SPACED REPETITION -->
+    <div class="hub-item" id="hub-spaced" onclick="startFlashcards(currentDeckId, 'spaced')">
+      <div class="hub-icon">↻</div>
+      <div class="hub-info">
+        <div class="hub-name" id="hub-spaced-name" data-i18n="modeSpaced">Spaced Repetition</div>
+        <div class="hub-sub"  id="hub-spaced-sub" data-i18n="modeSpacedSub">Review only cards due today</div>
+        <div class="hub-sub"  id="hub-spaced-due" style="color:var(--gold);"></div>
+      </div>
+      <div class="hub-arrow">›</div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="hub-item" id="hub-quiz" onclick="startQuiz(currentDeckId)">
+      <div class="hub-icon">?</div>
+      <div class="hub-info">
+        <div class="hub-name" id="hub-quiz-name" data-i18n="modeQuiz">Quiz</div>
+        <div class="hub-sub"  id="hub-quiz-sub" data-i18n="modeQuizSub">Multiple choice questions</div>
+      </div>
+      <div class="hub-arrow">›</div>
+    </div>
+
+    <!-- WRITE MODE -->
+    <div class="hub-item" id="hub-write" onclick="startWrite(currentDeckId)">
+      <div class="hub-icon">✍</div>
+      <div class="hub-info">
+        <div class="hub-name" id="hub-write-name" data-i18n="modeWrite">Write</div>
+        <div class="hub-sub"  id="hub-write-sub" data-i18n="modeWriteSub">Type the answer, typos detected</div>
+      </div>
+      <div class="hub-arrow">›</div>
+    </div>
+
+    <!-- FAVORITES -->
+    <div class="hub-item" id="hub-favorites" onclick="startFavorites(currentDeckId)">
+      <div class="hub-icon">◆</div>
+      <div class="hub-info">
+        <div class="hub-name" id="hub-favorites-name" data-i18n="modeFavorites">Favorites</div>
+        <div class="hub-sub"  id="hub-favorites-sub" data-i18n="modeFavoritesSub">Practice marked cards</div>
+        <div class="hub-sub"  id="hub-favorites-count" style="color:var(--gold);"></div>
+      </div>
+      <div class="hub-arrow">›</div>
+    </div>
+
+    <!-- HARD CARDS -->
+    <div class="hub-item" id="hub-hard" onclick="startHardCards(currentDeckId)">
+      <div class="hub-icon">⚠</div>
+      <div class="hub-info">
+        <div class="hub-name" id="hub-hard-name" data-i18n="modeHard">Hard Cards</div>
+        <div class="hub-sub"  id="hub-hard-sub" data-i18n="modeHardSub">Cards you struggle with most</div>
+        <div class="hub-sub"  id="hub-hard-count" style="color:var(--gold);"></div>
+      </div>
+      <div class="hub-arrow">›</div>
+    </div>
+
+    <!-- DIRECTION CHIPS -->
+    <div class="hub-direction-row" id="hub-direction-row" onclick="event.stopPropagation()">
+      <div class="hub-reverse-label" id="hub-direction-label" data-i18n="modeDirection">Direction</div>
+      <div class="hub-chips" style="margin-top:0;">
+        <button class="hub-chip active" id="dir-standard" data-i18n="dirStandard" onclick="setDirection('standard')">Standard</button>
+        <button class="hub-chip"        id="dir-reversed" data-i18n="dirReversed" onclick="setDirection('reversed')">Reversed</button>
+        <button class="hub-chip"        id="dir-random" data-i18n="dirRandom"   onclick="setDirection('random')">Random</button>
+      </div>
+    </div>
+
+    <div class="hub-divider"></div>
+
+    <!-- MANAGE CARDS -->
+    <div class="hub-item" onclick="openManageCards()">
+      <div class="hub-icon">✎</div>
+      <div class="hub-info">
+        <div class="hub-name" id="hub-manage-name" data-i18n="modeManage">Manage Cards</div>
+        <div class="hub-sub"  id="hub-manage-sub" data-i18n="modeManageSub">Add, edit or delete cards</div>
+      </div>
+      <div class="hub-arrow">›</div>
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="hub-item" onclick="openStats()">
+      <div class="hub-icon">∥</div>
+      <div class="hub-info">
+        <div class="hub-name" id="hub-stats-name" data-i18n="modeStats">Statistics</div>
+        <div class="hub-sub"  id="hub-stats-sub" data-i18n="modeStatsSub">View your learning progress</div>
+      </div>
+      <div class="hub-arrow">›</div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="hub-item" onclick="openSettings()">
+      <div class="hub-icon">⚙</div>
+      <div class="hub-info">
+        <div class="hub-name" id="hub-settings-name" data-i18n="modeSettings">Settings</div>
+        <div class="hub-sub"  id="hub-settings-sub" data-i18n="modeSettingsSub">Language, import/export, reset</div>
+      </div>
+      <div class="hub-arrow">›</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 8 – STATISTICS
+══════════════════════════════════════ -->
+<div id="page-stats" class="page">
+
+  <nav class="nav">
+    <button class="nav-back" id="stats-back-btn" data-i18n="navLibraryBack" onclick="showPage('page-library')">‹ Library</button>
+    <span class="nav-label" id="stats-nav-label" data-i18n="navStats">Statistics</span>
+  </nav>
+
+  <!-- hero numbers -->
+  <div class="stats-hero">
+    <div class="stats-hero-item">
+      <div class="stats-hero-num" id="stat-streak">0</div>
+      <div class="stats-hero-label" id="stat-streak-label" data-i18n="statStreakLabel">Day Streak ↑</div>
+    </div>
+    <div class="stats-hero-item">
+      <div class="stats-hero-num" id="stat-total-learned">0</div>
+      <div class="stats-hero-label" id="stat-learned-label" data-i18n="statLearnedLabel">Total Learned</div>
+    </div>
+    <div class="stats-hero-item">
+      <div class="stats-hero-num" id="stat-total-decks">0</div>
+      <div class="stats-hero-label" id="stat-decks-label" data-i18n="statDecksLabel">Decks</div>
+    </div>
+  </div>
+
+  <div class="stats-section-label" id="stats-per-deck-label" data-i18n="statsPerDeck">Per Deck</div>
+
+  <div class="stats-deck-list-wrap">
+    <div class="stats-deck-list" id="stats-deck-list">
+      <!-- populated by JS -->
+    </div>
+    <div class="scroll-arrow hidden" id="stats-list-arrow">&#8595;</div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 9 – SETTINGS
+══════════════════════════════════════ -->
+<div id="page-settings" class="page">
+
+  <nav class="nav">
+    <button class="nav-back" id="settings-back-btn" data-i18n="navLibraryBack" onclick="showPage('page-library')">‹ Library</button>
+    <span class="nav-label" id="settings-nav-label" data-i18n="navSettings">Settings</span>
+  </nav>
+
+  <div class="settings-scroll-wrap">
+    <div class="settings-scroll" id="settings-scroll">
+
+  <!-- language -->
+  <div class="settings-section">
+    <div class="settings-section-label" id="settings-lang-label" data-i18n="settingsLang">Language</div>
+    <div class="lang-grid">
+      <button class="lang-btn" id="lang-en" onclick="setLanguage('en')"><span class="lang-code">EN</span>English</button>
+      <button class="lang-btn" id="lang-de" onclick="setLanguage('de')"><span class="lang-code">DE</span>Deutsch</button>
+      <button class="lang-btn" id="lang-fr" onclick="setLanguage('fr')"><span class="lang-code">FR</span>Français</button>
+      <button class="lang-btn" id="lang-es" onclick="setLanguage('es')"><span class="lang-code">ES</span>Español</button>
+    </div>
+  </div>
+
+  <!-- data management -->
+  <div class="settings-section">
+    <div class="settings-section-label" id="settings-data-label" data-i18n="settingsData">Data</div>
+    <div class="settings-item" onclick="exportJSON()">
+      <div class="settings-item-left">
+        <div class="settings-item-icon">↓</div>
+        <div>
+          <div class="settings-item-label" id="settings-save-label" data-i18n="settingsSaveLabel">Save data</div>
+          <div class="settings-item-sub" id="settings-save-sub" data-i18n="settingsSaveSub">Download your flixcard-data.json</div>
+        </div>
+      </div>
+      <div class="settings-item-arrow">›</div>
+    </div>
+    <div class="settings-item" onclick="triggerFileImport()">
+      <div class="settings-item-left">
+        <div class="settings-item-icon">↑</div>
+        <div>
+          <div class="settings-item-label" id="settings-load-label" data-i18n="settingsLoadLabel">Load data</div>
+          <div class="settings-item-sub" id="settings-load-sub" data-i18n="settingsLoadSub">Import a flixcard-data.json</div>
+        </div>
+      </div>
+      <div class="settings-item-arrow">›</div>
+    </div>
+    <div class="settings-item" onclick="openStats()">
+      <div class="settings-item-left">
+        <div class="settings-item-icon">∥</div>
+        <div>
+          <div class="settings-item-label" id="settings-stats-label" data-i18n="settingsStatsLabel">Statistics</div>
+          <div class="settings-item-sub" id="settings-stats-sub" data-i18n="settingsStatsSub">View your learning progress</div>
+        </div>
+      </div>
+      <div class="settings-item-arrow">›</div>
+    </div>
+  </div>
+
+  <!-- version log -->
+  <div class="settings-section">
+    <div class="settings-section-label"><span id="settings-version-label" data-i18n="settingsVersion">Version</span> <span id="settings-version" style="color:var(--gold);font-family:var(--font-mono);font-size:0.65rem;"></span></div>
+    <div class="version-log" id="version-log">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- danger zone -->
+  <div class="settings-danger">
+    <button class="btn btn-danger" id="settings-reset-btn" data-i18n="settingsReset" style="width:100%;" onclick="resetAllData()">
+      Reset all data
+    </button>
+  </div>
+
+  </div><!-- end .settings-scroll -->
+    <div class="scroll-arrow hidden" id="settings-arrow">&#8595;</div>
+  </div><!-- end .settings-scroll-wrap -->
+
+</div>
+
+<div id="page-deck-detail" class="page">
+
+  <nav class="nav">
+    <button class="nav-back" onclick="showPage('page-library'); renderLibrary()">‹ Library</button>
+    <span class="nav-label" id="detail-nav-label">Deck</span>
+  </nav>
+
+  <div class="detail-header">
+    <div class="detail-title" id="detail-title">—</div>
+    <div class="detail-desc" id="detail-desc"></div>
+
+    <div class="detail-stats-row">
+      <div class="detail-stat">
+        <div class="detail-stat-num" id="detail-total">0</div>
+        <div class="detail-stat-label">Total</div>
+      </div>
+      <div class="detail-stat">
+        <div class="detail-stat-num" id="detail-learned">0</div>
+        <div class="detail-stat-label">Learned</div>
+      </div>
+      <div class="detail-stat">
+        <div class="detail-stat-num" id="detail-open">0</div>
+        <div class="detail-stat-label">Open</div>
+      </div>
+    </div>
+
+    <div class="detail-progress">
+      <div class="detail-progress-track">
+        <div class="detail-progress-fill" id="detail-progress-fill" style="width:0%"></div>
+      </div>
+      <div class="detail-progress-pct" id="detail-progress-pct">0%</div>
+    </div>
+  </div>
+
+  <div class="mode-section-label">Choose a mode</div>
+
+  <div class="mode-list" id="mode-list">
+    <div class="mode-item" id="mode-flashcard" onclick="startFlashcards(currentDeckId, 'all')">
+      <div class="mode-icon">↔</div>
+      <div class="mode-info">
+        <div class="mode-name">Flashcards</div>
+        <div class="mode-sub">Flip cards, rate yourself</div>
+      </div>
+      <div class="mode-arrow">›</div>
+    </div>
+    <div class="mode-item" id="mode-spaced" onclick="startFlashcards(currentDeckId, 'spaced')">
+      <div class="mode-icon">↻</div>
+      <div class="mode-info">
+        <div class="mode-name">Spaced Repetition</div>
+        <div class="mode-sub">Review only cards due today</div>
+      </div>
+      <div class="mode-arrow">›</div>
+    </div>
+    <div class="mode-item" id="mode-quiz" onclick="startQuiz(currentDeckId)">
+      <div class="mode-icon">?</div>
+      <div class="mode-info">
+        <div class="mode-name">Quiz</div>
+        <div class="mode-sub">Multiple choice questions</div>
+      </div>
+      <div class="mode-arrow">›</div>
+    </div>
+    <div class="mode-item" onclick="openManageCards()">
+      <div class="mode-icon">✎</div>
+      <div class="mode-info">
+        <div class="mode-name">Manage Cards</div>
+        <div class="mode-sub">Add, edit or delete cards</div>
+      </div>
+      <div class="mode-arrow">›</div>
+    </div>
+  </div>
+
+  <div class="detail-footer">
+    <button class="btn btn-ghost" style="flex:1;" onclick="editCurrentDeck()">Edit Deck</button>
+    <button class="btn btn-danger" onclick="deleteCurrentDeck()">Delete</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 3 – CREATE / EDIT DECK
+══════════════════════════════════════ -->
+<div id="page-create-deck" class="page">
+
+  <nav class="nav">
+    <button class="nav-back" id="create-deck-back" onclick="showPage('page-library')">‹ Library</button>
+    <span class="nav-label" id="create-deck-nav-label">New Deck</span>
+  </nav>
+
+  <div class="form-body">
+
+    <div class="form-group">
+      <label class="form-label" id="form-deck-name-label" data-i18n="formDeckName" for="input-deck-name">Deck Name</label>
+      <input
+        class="form-input"
+        id="input-deck-name" data-i18n-ph="formDeckNamePh"
+        type="text"
+        placeholder="e.g. Spanish B1"
+        maxlength="60"
+        oninput="clearFormError('error-deck-name')"
+      >
+      <div class="form-error" id="error-deck-name"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="input-deck-desc"><span id="form-deck-desc-label" data-i18n="formDeckDesc">Description</span> <span id="form-deck-desc-opt" data-i18n="formDeckDescOpt" style="color:var(--text-dim);font-size:0.65rem;">(optional)</span></label>
+      <textarea
+        class="form-textarea"
+        id="input-deck-desc" data-i18n-ph="formDeckDescPh"
+        rows="3"
+        placeholder="What will you learn in this deck?"
+        maxlength="120"
+      ></textarea>
+      <div class="form-hint" id="form-deck-desc-hint" data-i18n="formDeckDescHint">Max. 120 characters</div>
+    </div>
+
+  </div>
+
+  <div class="form-footer">
+    <button class="btn btn-ghost" id="create-deck-cancel" data-i18n="formCancel" onclick="showPage('page-library')">Cancel</button>
+    <button class="btn btn-primary" style="flex:1;" id="create-deck-submit" onclick="submitDeckForm()">Create Deck</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 4 – MANAGE CARDS
+══════════════════════════════════════ -->
+<div id="page-manage-cards" class="page">
+
+  <nav class="nav">
+    <button class="nav-back" onclick="goBackFromCards()">‹ Deck</button>
+    <span class="nav-label" id="manage-nav-label">Cards</span>
+  </nav>
+
+  <!-- add new card form -->
+  <div class="add-card-form">
+    <div class="form-label" id="manage-add-label" data-i18n="manageAddLabel">Add a new card</div>
+    <div class="add-card-row">
+      <input class="form-input" id="input-card-front" data-i18n-ph="manageFrontPh" type="text" placeholder="Front (e.g. Dog)" maxlength="200" oninput="clearFormError('error-card')">
+      <input class="form-input" id="input-card-back" data-i18n-ph="manageBackPh"  type="text" placeholder="Back (e.g. el perro)" maxlength="200" oninput="clearFormError('error-card')">
+    </div>
+    <div class="form-error" id="error-card"></div>
+    <button class="btn btn-primary" id="manage-add-btn" data-i18n="manageAddBtn" onclick="addCard()">+ Add Card</button>
+  </div>
+
+  <!-- card count label -->
+  <div class="add-card-section-label" id="manage-count-label">Cards</div>
+
+  <!-- card list -->
+  <div class="card-list-wrap">
+    <div class="card-list" id="card-list">
+      <!-- populated by JS -->
+    </div>
+    <div class="scroll-arrow hidden" id="card-list-arrow">&#8595;</div>
+  </div>
+
+</div>
+
+<script>
+  // ── CONSTANTS ──
+  const JSON_VERSION = '1.0';
+
+  // ── APP STATE ──
+  let state = {
+    version:  JSON_VERSION,
+    language: 'en',
+    stats: {
+      streak:       0,
+      lastStudyDay: null,
+      totalLearned: 0
+    },
+    decks: []
+  };
+
+  let unsavedChanges = false;
+
+  // ── i18n (English as base/fallback) ──
+  const i18n = {
+    en: {
+      libraryEmpty:       'No decks yet',
+      libraryEmptySub:    'Create your first deck to get started',
+      welcomeSub:         'Your personal vocabulary trainer',
+      welcomeHint:        'Your data stays on your device — no account needed',
+      cards:              'cards',
+      modeFlashcard:      'Flashcards',
+      modeFlashcardSub:   'Flip cards, rate yourself',
+      modeSpaced:         'Spaced Repetition',
+      modeSpacedSub:      'Review only cards due today',
+      modeQuiz:           'Quiz',
+      modeQuizSub:        'Multiple choice questions',
+      modeManage:         'Manage Cards',
+      modeManageSub:      'Add, edit or delete cards',
+      modeStats:          'Statistics',
+      modeStatsSub:       'View your learning progress',
+      modeSettings:       'Settings',
+      modeSettingsSub:    'Language, import/export, reset',
+      ver01:              'Welcome screen, Library, Deck management',
+      ver02:              'Deck Detail, Create Deck, Manage Cards',
+      ver03:              'Flashcard mode, Quiz mode, Spaced Repetition',
+      ver04:              'Statistics, Settings, Language switcher, Reset',
+      ver05:              'Main Interface, Responsive layout, i18n version log',
+      ver051:             'Responsive layout extended for mobile & tablet, auto version',
+      ver031:             'Bugfixes: card flip, quiz answers, session summary',
+      ver06:              'Full UI internationalisation — all interface text in i18n',
+      ver061:             'Scroll-arrow indicator on all scrollable lists',
+      ver062:             'Blueprint rules embedded as comment in source code',
+      ver063:             'Replaced emoji with style-consistent Unicode symbols',
+      ver064:             'Settings icon restored to ⚙, language flags replaced with ISO codes',
+      ver07:              'Upload Deck button in library — import shared decks',
+      ver071:             'Fix hidden file input, symmetric footer buttons, settings icon only',
+      ver08:              'Favorites mode — mark cards and practice them separately',
+      ver081:             'Fix card flip — unflip before loading next card, no content bleed',
+      ver082:             'Cards can be flipped unlimited times before rating',
+      ver09:              'Reverse mode, Hard Cards session, Session length selector',
+      ver091:             'Replace reverse toggle with Standard / Reversed / Random direction chips',
+      ver100:             'Write mode — type answers, fuzzy matching with accent detection',
+      ver1001:            'Fix missing toggleFavorite declaration causing JS crash on load',
+      ver1002:            'Rule compliance: hover guards, off-grid comments, orphaned i18n removed, new quality rules',
+      ver110:             'Architecture refactor: data-i18n system, initSession, hub helpers, shared session state',
+      ver1101:            'Full compliance audit: off-grid comments, hex colors, function comments, btn padding',
+      ver1102:            'Version log redesign: grouped by MINOR, grid layout, no inline comment leak',
+      // Welcome page
+      loadDataBtn:        '↑ Load existing data',
+      startFreshBtn:      'Start fresh',
+      // Unsaved banner
+      unsavedLabel:       '▪ Unsaved changes',
+      saveBtnShort:       'Save JSON',
+      // Library nav & footer
+      navLibrary:         'Library',
+      btnNewDeck:         '+ New Deck',
+      btnUploadDeck:      '↑ Upload Deck',
+      btnSettings:        '⚙ Settings',
+      alertDeckImportError:     'Could not read file. Please make sure it is a valid FlixCard deck JSON.',
+      alertDeckImportSuccess:   'Deck imported successfully.',
+      alertDeckImportDuplicate: 'A deck with this name already exists. Rename it and try again.',
+      alertDeckImportInvalid:   'Invalid deck file — missing name or cards.',
+      libOverallLabel:    'Overall',
+      // Flashcard page
+      navLibraryBack:     '‹ Library',
+      fcSideFront:        'Front',
+      fcSideBack:         'Back',
+      fcTapHint:          'Tap to reveal',
+      fcBtnBad:           '✕ Not quite',
+      fcBtnGood:          '✓ Got it',
+      // Summary page
+      navSummary:         'Summary',
+      sumTitle:           'Session',
+      sumTitleEm:         'Complete',
+      sumCorrect:         'Correct',
+      sumMissed:          'Missed',
+      sumScore:           'Score',
+      sumTryAgain:        'Try again',
+      sumBackDeck:        'Back to Deck',
+      // Quiz page
+      quizQuestionLabel:  'What is the translation?',
+      quizNext:           'Next →',
+      // Hub page
+      hubLearnLabel:      'Learn',
+      hubDueToday:        'due today',
+      modeFavorites:      'Favorites',
+      modeFavoritesSub:   'Practice marked cards',
+      modeFavoritesCount: 'marked',
+      alertNoFavorites:   'No favorites yet — mark cards with ◆ in Manage Cards.',
+      modeHard:           'Hard Cards',
+      modeHardSub:        'Cards you struggle with most',
+      modeHardCount:      'struggling',
+      alertNoHardCards:   'No hard cards yet — keep practicing and they will appear here.',
+      modeDirection:      'Direction',
+      dirStandard:        'Standard',
+      dirReversed:        'Reversed',
+      dirRandom:          'Random',
+      chip10:             '10',
+      chip20:             '20',
+      chipAll:            'All',
+      modeWrite:          'Write',
+      modeWriteSub:       'Type the answer, typos detected',
+      writeQuestionLabel: 'Write the answer',
+      writeInputPh:       'Type your answer…',
+      writeResultCorrect: 'Correct',
+      writeResultAlmost:  'Almost',
+      writeResultWrong:   'Wrong',
+      writeResultWas:     'Correct answer:',
+      writeResultTypo:    'Watch your spelling:',
+      // Stats page
+      navStats:           'Statistics',
+      statStreakLabel:    'Day Streak ↑',
+      statLearnedLabel:   'Total Learned',
+      statDecksLabel:     'Decks',
+      statsPerDeck:       'Per Deck',
+      statsEmpty:         'No decks yet — create one to see stats',
+      statsCardsLearned:  'cards learned',
+      // Settings page
+      navSettings:        'Settings',
+      settingsLang:       'Language',
+      settingsData:       'Data',
+      settingsSaveLabel:  'Save data',
+      settingsSaveSub:    'Download your flixcard-data.json',
+      settingsLoadLabel:  'Load data',
+      settingsLoadSub:    'Import a flixcard-data.json',
+      settingsStatsLabel: 'Statistics',
+      settingsStatsSub:   'View your learning progress',
+      settingsVersion:    'Version',
+      settingsReset:      'Reset all data',
+      // Create deck page
+      navNewDeck:         'New Deck',
+      navEditDeck:        'Edit Deck',
+      formDeckName:       'Deck Name',
+      formDeckNamePh:     'e.g. Spanish B1',
+      formDeckDesc:       'Description',
+      formDeckDescOpt:    '(optional)',
+      formDeckDescPh:     'What will you learn in this deck?',
+      formDeckDescHint:   'Max. 120 characters',
+      formCancel:         'Cancel',
+      formCreate:         'Create Deck',
+      formSave:           'Save Changes',
+      // Manage cards page
+      manageAddLabel:     'Add a new card',
+      manageFrontPh:      'Front (e.g. Dog)',
+      manageBackPh:       'Back (e.g. el perro)',
+      manageAddBtn:       '+ Add Card',
+      manageSaveBtn:      'Save',
+      // Update overlay
+      updateTitle:        'New Update',
+      updateTitleEm:      'Deploying…',
+      updateSub:          'A new version is being deployed. The page will reload automatically when ready.',
+      // Alerts
+      alertNoDueCards:    'No cards due today! Come back tomorrow or use Flashcard mode.',
+      alertNeedCards:     'You need at least 2 cards to start a quiz.',
+      alertImportError:   'Could not read file. Please make sure it is a valid FlixCard JSON.',
+      alertResetConfirm1: 'This will delete ALL your decks and progress. Are you sure?',
+      alertResetConfirm2: 'This cannot be undone. Confirm reset?',
+      cardEditBtn:        'Edit',
+      cardDeleteConfirm:  'Delete this card? This cannot be undone.',
+      deckDeleteConfirm:  'Delete this deck? This cannot be undone.',
+      errorBothRequired:  'Both front and back are required.',
+      errorDeckRequired:  'Deck name is required.',
+      errorDeckDuplicate: 'A deck with this name already exists.',
+      errorIncompat:      'Incompatible file version',
+      errorIncompatSub:   'This app expects version',
+    },
+    de: {
+      libraryEmpty:       'Noch keine Decks',
+      libraryEmptySub:    'Erstelle dein erstes Deck um zu beginnen',
+      welcomeSub:         'Dein persönlicher Vokabeltrainer',
+      welcomeHint:        'Deine Daten bleiben auf deinem Gerät – kein Account nötig',
+      cards:              'Karten',
+      modeFlashcard:      'Karteikarten',
+      modeFlashcardSub:   'Karte umdrehen, selbst bewerten',
+      modeSpaced:         'Spaced Repetition',
+      modeSpacedSub:      'Nur heute fällige Karten wiederholen',
+      modeQuiz:           'Quiz',
+      modeQuizSub:        'Multiple-Choice-Fragen',
+      modeManage:         'Karten verwalten',
+      modeManageSub:      'Karten hinzufügen, bearbeiten, löschen',
+      modeStats:          'Statistiken',
+      modeStatsSub:       'Lernfortschritt anzeigen',
+      modeSettings:       'Einstellungen',
+      modeSettingsSub:    'Sprache, Import/Export, Zurücksetzen',
+      ver01:              'Willkommensseite, Bibliothek, Deck-Verwaltung',
+      ver02:              'Deck-Detail, Deck erstellen, Karten verwalten',
+      ver03:              'Karteikarten, Quiz, Spaced Repetition',
+      ver04:              'Statistiken, Einstellungen, Sprachwahl, Reset',
+      ver05:              'Haupt-Interface, Responsives Layout, Mehrsprachiges Versionslog',
+      ver051:             'Responsives Layout für Handy & Tablet, automatische Version',
+      ver031:             'Bugfixes: Kartenflip, Quiz-Antworten, Zusammenfassung',
+      ver06:              'Vollständige UI-Internationalisierung — alle Interface-Texte in i18n',
+      ver061:             'Scroll-Pfeil-Indikator auf allen scrollbaren Listen',
+      ver062:             'Blueprint-Regeln als Kommentar in den Quellcode eingebettet',
+      ver063:             'Emojis durch stilkonforme Unicode-Symbole ersetzt',
+      ver064:             'Settings-Icon auf ⚙ zurückgesetzt, Länder-Flags durch ISO-Kürzel ersetzt',
+      ver07:              'Deck-hochladen-Button in der Bibliothek — geteilte Decks importieren',
+      ver071:             'Datei-Input versteckt, symmetrische Footer-Buttons, Settings nur Icon',
+      ver08:              'Favoriten-Modus — Karten markieren und separat üben',
+      ver081:             'Kartenflip behoben — erst zurückdrehen, dann neue Karte laden',
+      ver082:             'Karten können beliebig oft gedreht werden vor der Bewertung',
+      ver09:              'Umgekehrter Modus, Schwere-Karten-Session, Sessionlänge',
+      ver091:             'Umkehr-Toggle durch Standard / Umgekehrt / Zufällig Chips ersetzt',
+      ver100:             'Schreibmodus — Antwort eintippen, Tippfehler- und Akzenterkennung',
+      ver1001:            'Fehlende toggleFavorite-Deklaration behoben — JS-Absturz beim Laden',
+      ver1002:            'Regelkonformität: Hover-Guards, Off-Grid-Kommentare, verwaiste i18n-Keys entfernt',
+      ver110:             'Architektur-Refactoring: data-i18n-System, initSession, Hub-Helfer, geteilter Session-State',
+      ver1101:            'Vollständiger Compliance-Audit: Off-Grid, Hex-Farben, Funktionskommentare, Button-Padding',
+      ver1102:            'Versionslog neu gestaltet: nach MINOR gruppiert, Grid-Layout, kein Kommentarleck',
+      loadDataBtn:        '↑ Daten laden',
+      startFreshBtn:      'Neu starten',
+      unsavedLabel:       '▪ Ungespeicherte Änderungen',
+      saveBtnShort:       'JSON speichern',
+      navLibrary:         'Bibliothek',
+      btnNewDeck:         '+ Neues Deck',
+      btnUploadDeck:      '↑ Deck hochladen',
+      btnSettings:        '⚙ Einstellungen',
+      alertDeckImportError:     'Datei konnte nicht gelesen werden. Bitte eine gültige FlixCard-Deck-JSON verwenden.',
+      alertDeckImportSuccess:   'Deck erfolgreich importiert.',
+      alertDeckImportDuplicate: 'Ein Deck mit diesem Namen existiert bereits. Bitte umbenennen.',
+      alertDeckImportInvalid:   'Ungültige Deck-Datei — Name oder Karten fehlen.',
+      libOverallLabel:    'Gesamt',
+      navLibraryBack:     '‹ Bibliothek',
+      fcSideFront:        'Vorderseite',
+      fcSideBack:         'Rückseite',
+      fcTapHint:          'Tippen zum Aufdecken',
+      fcBtnBad:           '✕ Nicht ganz',
+      fcBtnGood:          '✓ Gewusst',
+      navSummary:         'Zusammenfassung',
+      sumTitle:           'Sitzung',
+      sumTitleEm:         'Abgeschlossen',
+      sumCorrect:         'Richtig',
+      sumMissed:          'Falsch',
+      sumScore:           'Ergebnis',
+      sumTryAgain:        'Nochmal versuchen',
+      sumBackDeck:        'Zurück zum Deck',
+      quizQuestionLabel:  'Was ist die Übersetzung?',
+      quizNext:           'Weiter →',
+      hubLearnLabel:      'Lernen',
+      hubDueToday:        'heute fällig',
+      modeFavorites:      'Favoriten',
+      modeFavoritesSub:   'Markierte Karten üben',
+      modeFavoritesCount: 'markiert',
+      alertNoFavorites:   'Noch keine Favoriten — markiere Karten mit ◆ in Karten verwalten.',
+      modeHard:           'Schwere Karten',
+      modeHardSub:        'Karten mit der höchsten Fehlerquote',
+      modeHardCount:      'schwierig',
+      alertNoHardCards:   'Noch keine schweren Karten — übe weiter und sie erscheinen hier.',
+      modeDirection:      'Richtung',
+      dirStandard:        'Standard',
+      dirReversed:        'Umgekehrt',
+      dirRandom:          'Zufällig',
+      chip10:             '10',
+      chip20:             '20',
+      chipAll:            'Alle',
+      modeWrite:          'Schreiben',
+      modeWriteSub:       'Antwort eintippen, Tippfehler werden erkannt',
+      writeQuestionLabel: 'Schreibe die Antwort',
+      writeInputPh:       'Antwort eingeben…',
+      writeResultCorrect: 'Richtig',
+      writeResultAlmost:  'Fast richtig',
+      writeResultWrong:   'Falsch',
+      writeResultWas:     'Richtige Antwort:',
+      writeResultTypo:    'Achte auf die Schreibweise:',
+      navStats:           'Statistiken',
+      statStreakLabel:    'Tages-Streak ↑',
+      statLearnedLabel:   'Insgesamt gelernt',
+      statDecksLabel:     'Decks',
+      statsPerDeck:       'Pro Deck',
+      statsEmpty:         'Noch keine Decks — erstelle eines um Statistiken zu sehen',
+      statsCardsLearned:  'Karten gelernt',
+      navSettings:        'Einstellungen',
+      settingsLang:       'Sprache',
+      settingsData:       'Daten',
+      settingsSaveLabel:  'Daten speichern',
+      settingsSaveSub:    'flixcard-data.json herunterladen',
+      settingsLoadLabel:  'Daten laden',
+      settingsLoadSub:    'flixcard-data.json importieren',
+      settingsStatsLabel: 'Statistiken',
+      settingsStatsSub:   'Lernfortschritt anzeigen',
+      settingsVersion:    'Version',
+      settingsReset:      'Alle Daten zurücksetzen',
+      navNewDeck:         'Neues Deck',
+      navEditDeck:        'Deck bearbeiten',
+      formDeckName:       'Deck-Name',
+      formDeckNamePh:     'z. B. Spanisch B1',
+      formDeckDesc:       'Beschreibung',
+      formDeckDescOpt:    '(optional)',
+      formDeckDescPh:     'Was lernst du in diesem Deck?',
+      formDeckDescHint:   'Max. 120 Zeichen',
+      formCancel:         'Abbrechen',
+      formCreate:         'Deck erstellen',
+      formSave:           'Änderungen speichern',
+      manageAddLabel:     'Neue Karte hinzufügen',
+      manageFrontPh:      'Vorderseite (z. B. Hund)',
+      manageBackPh:       'Rückseite (z. B. el perro)',
+      manageAddBtn:       '+ Karte hinzufügen',
+      manageSaveBtn:      'Speichern',
+      updateTitle:        'Neues Update',
+      updateTitleEm:      'Wird bereitgestellt…',
+      updateSub:          'Eine neue Version wird bereitgestellt. Die Seite lädt automatisch neu, sobald sie fertig ist.',
+      alertNoDueCards:    'Keine Karten heute fällig! Komm morgen wieder oder nutze den Karteikarten-Modus.',
+      alertNeedCards:     'Du brauchst mindestens 2 Karten um ein Quiz zu starten.',
+      alertImportError:   'Datei konnte nicht gelesen werden. Bitte sicherstellen, dass es eine gültige FlixCard-JSON ist.',
+      alertResetConfirm1: 'Damit werden ALLE Decks und Fortschritte gelöscht. Bist du sicher?',
+      alertResetConfirm2: 'Dies kann nicht rückgängig gemacht werden. Reset bestätigen?',
+      cardEditBtn:        'Bearbeiten',
+      cardDeleteConfirm:  'Diese Karte löschen? Dies kann nicht rückgängig gemacht werden.',
+      deckDeleteConfirm:  'Dieses Deck löschen? Dies kann nicht rückgängig gemacht werden.',
+      errorBothRequired:  'Vorder- und Rückseite sind erforderlich.',
+      errorDeckRequired:  'Deck-Name ist erforderlich.',
+      errorDeckDuplicate: 'Ein Deck mit diesem Namen existiert bereits.',
+      errorIncompat:      'Inkompatible Dateiversion',
+      errorIncompatSub:   'Diese App erwartet Version',
+    },
+    fr: {
+      libraryEmpty:       'Aucun paquet',
+      libraryEmptySub:    'Créez votre premier paquet pour commencer',
+      welcomeSub:         'Votre entraîneur de vocabulaire',
+      welcomeHint:        'Vos données restent sur votre appareil',
+      cards:              'cartes',
+      modeFlashcard:      'Fiches',
+      modeFlashcardSub:   'Retourner les cartes, s\'auto-évaluer',
+      modeSpaced:         'Répétition espacée',
+      modeSpacedSub:      'Réviser uniquement les cartes du jour',
+      modeQuiz:           'Quiz',
+      modeQuizSub:        'Questions à choix multiples',
+      modeManage:         'Gérer les cartes',
+      modeManageSub:      'Ajouter, modifier ou supprimer des cartes',
+      modeStats:          'Statistiques',
+      modeStatsSub:       'Voir votre progression',
+      modeSettings:       'Paramètres',
+      modeSettingsSub:    'Langue, import/export, réinitialisation',
+      ver01:              'Écran d\'accueil, Bibliothèque, Gestion des paquets',
+      ver02:              'Détail du paquet, Créer un paquet, Gérer les cartes',
+      ver03:              'Mode Fiches, Quiz, Répétition espacée',
+      ver04:              'Statistiques, Paramètres, Choix de langue, Réinitialisation',
+      ver05:              'Interface principale, Mise en page responsive, Journal de version multilingue',
+      ver051:             'Mise en page responsive étendue mobile & tablette, version automatique',
+      ver031:             'Corrections: retournement de carte, réponses quiz, résumé de session',
+      ver06:              'Internationalisation complète de l\'interface — tous les textes en i18n',
+      ver061:             'Indicateur flèche de défilement sur toutes les listes scrollables',
+      ver062:             'Règles Blueprint intégrées en commentaire dans le code source',
+      ver063:             'Emojis remplacés par des symboles Unicode cohérents avec le style',
+      ver064:             'Icône paramètres restaurée en ⚙, drapeaux remplacés par codes ISO',
+      ver07:              'Bouton importer paquet dans la bibliothèque',
+      ver071:             'Input fichier masqué, boutons footer symétriques, icône seule pour paramètres',
+      ver08:              'Mode Favoris — marquer des cartes et les pratiquer séparément',
+      ver081:             'Correction animation flip — retournement avant chargement suivant',
+      ver082:             'Les cartes peuvent être retournées autant de fois que souhaité',
+      ver09:              'Mode inversé, session cartes difficiles, longueur de session',
+      ver091:             'Bouton inversé remplacé par chips Standard / Inversé / Aléatoire',
+      ver100:             'Mode écriture — saisir les réponses, correspondance floue avec accents',
+      ver1001:            'Correction déclaration toggleFavorite manquante — crash JS au chargement',
+      ver1002:            'Conformité règles: guards hover, commentaires off-grid, clés i18n orphelines supprimées',
+      ver110:             'Refactorisation architecture: système data-i18n, initSession, helpers hub, état session partagé',
+      ver1101:            'Audit conformité: commentaires off-grid, couleurs hex, commentaires fonctions, padding bouton',
+      ver1102:            'Journal version repensé: groupé par MINOR, mise en page grille, pas de fuite commentaire',
+      loadDataBtn:        '↑ Charger les données',
+      startFreshBtn:      'Recommencer',
+      unsavedLabel:       '▪ Modifications non sauvegardées',
+      saveBtnShort:       'Sauvegarder JSON',
+      navLibrary:         'Bibliothèque',
+      btnNewDeck:         '+ Nouveau Paquet',
+      btnUploadDeck:      '↑ Importer paquet',
+      btnSettings:        '⚙ Paramètres',
+      alertDeckImportError:     'Impossible de lire le fichier. Assurez-vous que c\'est un fichier FlixCard valide.',
+      alertDeckImportSuccess:   'Paquet importé avec succès.',
+      alertDeckImportDuplicate: 'Un paquet avec ce nom existe déjà. Renommez-le et réessayez.',
+      alertDeckImportInvalid:   'Fichier invalide — nom ou cartes manquants.',
+      libOverallLabel:    'Total',
+      navLibraryBack:     '‹ Bibliothèque',
+      fcSideFront:        'Recto',
+      fcSideBack:         'Verso',
+      fcTapHint:          'Appuyer pour révéler',
+      fcBtnBad:           '✕ Pas tout à fait',
+      fcBtnGood:          '✓ Compris',
+      navSummary:         'Résumé',
+      sumTitle:           'Session',
+      sumTitleEm:         'Terminée',
+      sumCorrect:         'Correct',
+      sumMissed:          'Manqué',
+      sumScore:           'Score',
+      sumTryAgain:        'Réessayer',
+      sumBackDeck:        'Retour au paquet',
+      quizQuestionLabel:  'Quelle est la traduction ?',
+      quizNext:           'Suivant →',
+      hubLearnLabel:      'Apprendre',
+      hubDueToday:        'à réviser aujourd\'hui',
+      modeFavorites:      'Favoris',
+      modeFavoritesSub:   'Pratiquer les cartes marquées',
+      modeFavoritesCount: 'marquées',
+      alertNoFavorites:   'Pas encore de favoris — marquez des cartes avec ◆ dans Gérer les cartes.',
+      modeHard:           'Cartes difficiles',
+      modeHardSub:        'Les cartes avec le plus d\'erreurs',
+      modeHardCount:      'difficiles',
+      alertNoHardCards:   'Pas encore de cartes difficiles — continuez à pratiquer.',
+      modeDirection:      'Direction',
+      dirStandard:        'Standard',
+      dirReversed:        'Inversé',
+      dirRandom:          'Aléatoire',
+      chip10:             '10',
+      chip20:             '20',
+      chipAll:            'Tous',
+      modeWrite:          'Écrire',
+      modeWriteSub:       'Tapez la réponse, les fautes détectées',
+      writeQuestionLabel: 'Écrivez la réponse',
+      writeInputPh:       'Tapez votre réponse…',
+      writeResultCorrect: 'Correct',
+      writeResultAlmost:  'Presque',
+      writeResultWrong:   'Incorrect',
+      writeResultWas:     'Bonne réponse :',
+      writeResultTypo:    'Attention à l\'orthographe :',
+      navStats:           'Statistiques',
+      statStreakLabel:    'Série de jours ↑',
+      statLearnedLabel:   'Total appris',
+      statDecksLabel:     'Paquets',
+      statsPerDeck:       'Par paquet',
+      statsEmpty:         'Aucun paquet — créez-en un pour voir les statistiques',
+      statsCardsLearned:  'cartes apprises',
+      navSettings:        'Paramètres',
+      settingsLang:       'Langue',
+      settingsData:       'Données',
+      settingsSaveLabel:  'Sauvegarder les données',
+      settingsSaveSub:    'Télécharger votre flixcard-data.json',
+      settingsLoadLabel:  'Charger les données',
+      settingsLoadSub:    'Importer un fichier flixcard-data.json',
+      settingsStatsLabel: 'Statistiques',
+      settingsStatsSub:   'Voir votre progression',
+      settingsVersion:    'Version',
+      settingsReset:      'Réinitialiser toutes les données',
+      navNewDeck:         'Nouveau Paquet',
+      navEditDeck:        'Modifier le paquet',
+      formDeckName:       'Nom du paquet',
+      formDeckNamePh:     'ex. Espagnol B1',
+      formDeckDesc:       'Description',
+      formDeckDescOpt:    '(optionnel)',
+      formDeckDescPh:     'Que allez-vous apprendre dans ce paquet ?',
+      formDeckDescHint:   'Max. 120 caractères',
+      formCancel:         'Annuler',
+      formCreate:         'Créer le paquet',
+      formSave:           'Enregistrer les modifications',
+      manageAddLabel:     'Ajouter une nouvelle carte',
+      manageFrontPh:      'Recto (ex. Chien)',
+      manageBackPh:       'Verso (ex. el perro)',
+      manageAddBtn:       '+ Ajouter une carte',
+      manageSaveBtn:      'Enregistrer',
+      updateTitle:        'Nouvelle mise à jour',
+      updateTitleEm:      'Déploiement…',
+      updateSub:          'Une nouvelle version est en cours de déploiement. La page se rechargera automatiquement.',
+      alertNoDueCards:    'Aucune carte à réviser aujourd\'hui ! Revenez demain ou utilisez le mode Fiches.',
+      alertNeedCards:     'Vous avez besoin d\'au moins 2 cartes pour démarrer un quiz.',
+      alertImportError:   'Impossible de lire le fichier. Assurez-vous qu\'il s\'agit d\'un fichier FlixCard JSON valide.',
+      alertResetConfirm1: 'Cela supprimera TOUS vos paquets et votre progression. Êtes-vous sûr ?',
+      alertResetConfirm2: 'Cette action est irréversible. Confirmer la réinitialisation ?',
+      cardEditBtn:        'Modifier',
+      cardDeleteConfirm:  'Supprimer cette carte ? Cette action est irréversible.',
+      deckDeleteConfirm:  'Supprimer ce paquet ? Cette action est irréversible.',
+      errorBothRequired:  'Le recto et le verso sont requis.',
+      errorDeckRequired:  'Le nom du paquet est requis.',
+      errorDeckDuplicate: 'Un paquet avec ce nom existe déjà.',
+      errorIncompat:      'Version de fichier incompatible',
+      errorIncompatSub:   'Cette application attend la version',
+    },
+    es: {
+      libraryEmpty:       'Sin mazos aún',
+      libraryEmptySub:    'Crea tu primer mazo para empezar',
+      welcomeSub:         'Tu entrenador de vocabulario personal',
+      welcomeHint:        'Tus datos se quedan en tu dispositivo',
+      cards:              'tarjetas',
+      modeFlashcard:      'Tarjetas',
+      modeFlashcardSub:   'Voltear tarjetas, autoevaluarse',
+      modeSpaced:         'Repetición espaciada',
+      modeSpacedSub:      'Revisar solo las tarjetas de hoy',
+      modeQuiz:           'Quiz',
+      modeQuizSub:        'Preguntas de opción múltiple',
+      modeManage:         'Gestionar tarjetas',
+      modeManageSub:      'Añadir, editar o eliminar tarjetas',
+      modeStats:          'Estadísticas',
+      modeStatsSub:       'Ver tu progreso de aprendizaje',
+      modeSettings:       'Ajustes',
+      modeSettingsSub:    'Idioma, importar/exportar, restablecer',
+      ver01:              'Pantalla de bienvenida, Biblioteca, Gestión de mazos',
+      ver02:              'Detalle de mazo, Crear mazo, Gestionar tarjetas',
+      ver03:              'Modo Tarjetas, Quiz, Repetición espaciada',
+      ver04:              'Estadísticas, Ajustes, Selector de idioma, Restablecer',
+      ver05:              'Interfaz principal, Diseño adaptable, Registro de versiones multilingüe',
+      ver051:             'Diseño adaptable extendido para móvil y tablet, versión automática',
+      ver031:             'Correcciones: volteo de tarjeta, respuestas del quiz, resumen de sesión',
+      ver06:              'Internacionalización completa de la interfaz — todos los textos en i18n',
+      ver061:             'Indicador de flecha de desplazamiento en todas las listas con scroll',
+      ver062:             'Reglas Blueprint integradas como comentario en el código fuente',
+      ver063:             'Emojis reemplazados por símbolos Unicode coherentes con el estilo',
+      ver064:             'Icono de ajustes restaurado a ⚙, banderas reemplazadas por códigos ISO',
+      ver07:              'Botón subir mazo en la biblioteca — importar mazos compartidos',
+      ver071:             'Input archivo oculto, botones footer simétricos, ajustes solo icono',
+      ver08:              'Modo Favoritos — marcar tarjetas y practicarlas por separado',
+      ver081:             'Corrección animación flip — voltear antes de cargar la siguiente',
+      ver082:             'Las tarjetas se pueden voltear tantas veces como se desee',
+      ver09:              'Modo invertido, sesión tarjetas difíciles, longitud de sesión',
+      ver091:             'Botón invertir reemplazado por chips Estándar / Invertido / Aleatorio',
+      ver100:             'Modo escritura — escribir respuestas, coincidencia difusa con acentos',
+      ver1001:            'Corrección declaración toggleFavorite faltante — crash JS al cargar',
+      ver1002:            'Cumplimiento reglas: guards hover, comentarios off-grid, claves i18n huérfanas eliminadas',
+      ver110:             'Refactorización arquitectura: sistema data-i18n, initSession, helpers hub, estado sesión compartido',
+      ver1101:            'Auditoría cumplimiento: comentarios off-grid, colores hex, comentarios funciones, padding botón',
+      ver1102:            'Registro versión rediseñado: agrupado por MINOR, diseño cuadrícula, sin filtración comentario',
+      loadDataBtn:        '↑ Cargar datos',
+      startFreshBtn:      'Empezar de cero',
+      unsavedLabel:       '▪ Cambios sin guardar',
+      saveBtnShort:       'Guardar JSON',
+      navLibrary:         'Biblioteca',
+      btnNewDeck:         '+ Nuevo Mazo',
+      btnUploadDeck:      '↑ Subir mazo',
+      btnSettings:        '⚙ Ajustes',
+      alertDeckImportError:     'No se pudo leer el archivo. Asegúrate de que sea un FlixCard JSON válido.',
+      alertDeckImportSuccess:   'Mazo importado correctamente.',
+      alertDeckImportDuplicate: 'Ya existe un mazo con este nombre. Renómbralo e inténtalo de nuevo.',
+      alertDeckImportInvalid:   'Archivo inválido — falta el nombre o las tarjetas.',
+      libOverallLabel:    'Total',
+      navLibraryBack:     '‹ Biblioteca',
+      fcSideFront:        'Anverso',
+      fcSideBack:         'Reverso',
+      fcTapHint:          'Toca para revelar',
+      fcBtnBad:           '✕ No del todo',
+      fcBtnGood:          '✓ Lo tengo',
+      navSummary:         'Resumen',
+      sumTitle:           'Sesión',
+      sumTitleEm:         'Completada',
+      sumCorrect:         'Correcto',
+      sumMissed:          'Fallado',
+      sumScore:           'Puntuación',
+      sumTryAgain:        'Intentar de nuevo',
+      sumBackDeck:        'Volver al mazo',
+      quizQuestionLabel:  '¿Cuál es la traducción?',
+      quizNext:           'Siguiente →',
+      hubLearnLabel:      'Aprender',
+      hubDueToday:        'para hoy',
+      modeFavorites:      'Favoritos',
+      modeFavoritesSub:   'Practicar tarjetas marcadas',
+      modeFavoritesCount: 'marcadas',
+      alertNoFavorites:   'Sin favoritos aún — marca tarjetas con ◆ en Gestionar tarjetas.',
+      modeHard:           'Tarjetas difíciles',
+      modeHardSub:        'Las tarjetas con más errores',
+      modeHardCount:      'difíciles',
+      alertNoHardCards:   'Sin tarjetas difíciles aún — sigue practicando y aparecerán aquí.',
+      modeDirection:      'Dirección',
+      dirStandard:        'Estándar',
+      dirReversed:        'Invertido',
+      dirRandom:          'Aleatorio',
+      chip10:             '10',
+      chip20:             '20',
+      chipAll:            'Todos',
+      modeWrite:          'Escribir',
+      modeWriteSub:       'Escribe la respuesta, errores detectados',
+      writeQuestionLabel: 'Escribe la respuesta',
+      writeInputPh:       'Escribe tu respuesta…',
+      writeResultCorrect: 'Correcto',
+      writeResultAlmost:  'Casi',
+      writeResultWrong:   'Incorrecto',
+      writeResultWas:     'Respuesta correcta:',
+      writeResultTypo:    'Atención a la ortografía:',
+      navStats:           'Estadísticas',
+      statStreakLabel:    'Racha de días ↑',
+      statLearnedLabel:   'Total aprendido',
+      statDecksLabel:     'Mazos',
+      statsPerDeck:       'Por mazo',
+      statsEmpty:         'Sin mazos aún — crea uno para ver estadísticas',
+      statsCardsLearned:  'tarjetas aprendidas',
+      navSettings:        'Ajustes',
+      settingsLang:       'Idioma',
+      settingsData:       'Datos',
+      settingsSaveLabel:  'Guardar datos',
+      settingsSaveSub:    'Descargar tu flixcard-data.json',
+      settingsLoadLabel:  'Cargar datos',
+      settingsLoadSub:    'Importar un flixcard-data.json',
+      settingsStatsLabel: 'Estadísticas',
+      settingsStatsSub:   'Ver tu progreso de aprendizaje',
+      settingsVersion:    'Versión',
+      settingsReset:      'Restablecer todos los datos',
+      navNewDeck:         'Nuevo Mazo',
+      navEditDeck:        'Editar mazo',
+      formDeckName:       'Nombre del mazo',
+      formDeckNamePh:     'ej. Español B1',
+      formDeckDesc:       'Descripción',
+      formDeckDescOpt:    '(opcional)',
+      formDeckDescPh:     '¿Qué aprenderás en este mazo?',
+      formDeckDescHint:   'Máx. 120 caracteres',
+      formCancel:         'Cancelar',
+      formCreate:         'Crear mazo',
+      formSave:           'Guardar cambios',
+      manageAddLabel:     'Añadir una nueva tarjeta',
+      manageFrontPh:      'Anverso (ej. Perro)',
+      manageBackPh:       'Reverso (ej. el perro)',
+      manageAddBtn:       '+ Añadir tarjeta',
+      manageSaveBtn:      'Guardar',
+      updateTitle:        'Nueva actualización',
+      updateTitleEm:      'Desplegando…',
+      updateSub:          'Se está desplegando una nueva versión. La página se recargará automáticamente cuando esté lista.',
+      alertNoDueCards:    '¡No hay tarjetas para hoy! Vuelve mañana o usa el modo Tarjetas.',
+      alertNeedCards:     'Necesitas al menos 2 tarjetas para iniciar un quiz.',
+      alertImportError:   'No se pudo leer el archivo. Asegúrate de que sea un FlixCard JSON válido.',
+      alertResetConfirm1: 'Esto eliminará TODOS tus mazos y progreso. ¿Estás seguro?',
+      alertResetConfirm2: 'Esta acción no se puede deshacer. ¿Confirmar restablecimiento?',
+      cardEditBtn:        'Editar',
+      cardDeleteConfirm:  '¿Eliminar esta tarjeta? Esta acción no se puede deshacer.',
+      deckDeleteConfirm:  '¿Eliminar este mazo? Esta acción no se puede deshacer.',
+      errorBothRequired:  'El anverso y el reverso son obligatorios.',
+      errorDeckRequired:  'El nombre del mazo es obligatorio.',
+      errorDeckDuplicate: 'Ya existe un mazo con este nombre.',
+      errorIncompat:      'Versión de archivo incompatible',
+      errorIncompatSub:   'Esta aplicación espera la versión',
+    }
+  };
+
+  // Returns translated string, falls back to English
+  function t(key) {
+    const lang = state.language || 'en';
+    return (i18n[lang] && i18n[lang][key]) || i18n['en'][key] || key;
+  }
+
+  // ── PAGE NAVIGATION ──
+  // ── SCROLL ARROW HELPER ──
+  // Shows/hides the WhatsApp-style arrow when more content is below.
+  function setupScrollArrow(scrollElId, arrowElId) {
+    const scrollEl = document.getElementById(scrollElId);
+    const arrowEl  = document.getElementById(arrowElId);
+    if (!scrollEl || !arrowEl) return;
+
+    const update = () => {
+      const hasMore = scrollEl.scrollHeight - scrollEl.scrollTop > scrollEl.clientHeight + 4;
+      arrowEl.classList.toggle('hidden', !hasMore);
+    };
+
+    scrollEl.removeEventListener('scroll', scrollEl._arrowHandler);
+    scrollEl._arrowHandler = update;
+    scrollEl.addEventListener('scroll', update, { passive: true });
+
+    window.removeEventListener('resize', scrollEl._arrowResizeHandler);
+    scrollEl._arrowResizeHandler = update;
+    window.addEventListener('resize', update, { passive: true });
+
+    update();
+  }
+
+  // ── SHOW PAGE ──
+  // Hides all pages and shows the target page by ID.
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(pageId);
+    if (target) target.classList.add('active');
+  }
+
+  // ── WELCOME PAGE ACTIONS ──
+  function triggerFileImport() {
+    document.getElementById('file-input').click();
+  }
+
+  // ── TRIGGER DECK UPLOAD ──
+  // Opens file picker for a standalone deck JSON.
+  function triggerDeckImport() {
+    const input = document.getElementById('deck-import-input');
+    input.value = '';
+    input.click();
+  }
+
+  // ── IMPORT DECK ──
+  // Reads a deck JSON and merges it into state.decks.
+  // Only reads: name, description, cards (front, back).
+  // Ignores all user data (stats, streak, language etc.)
+  // Generates fresh IDs for deck and all cards.
+  function importDeck(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const raw = JSON.parse(e.target.result);
+        // Accept bare deck {name, cards} or full export (takes first deck)
+        const deckData = Array.isArray(raw.decks) ? raw.decks[0] : raw;
+
+        if (!deckData || !deckData.name || !Array.isArray(deckData.cards)) {
+          alert(t('alertDeckImportInvalid'));
+          return;
+        }
+        if (state.decks.some(d => d.name.trim().toLowerCase() === deckData.name.trim().toLowerCase())) {
+          alert(t('alertDeckImportDuplicate'));
+          return;
+        }
+
+        const newDeck = {
+          id:          generateId(),
+          name:        deckData.name.trim(),
+          description: (deckData.description || '').trim(),
+          created:     new Date().toISOString().slice(0, 10),
+          cards:       deckData.cards
+            .filter(c => c.front && c.back)
+            .map(c => ({
+              id:         generateId(),
+              front:      c.front.trim(),
+              back:       c.back.trim(),
+              learned:    false,
+              errorRate:  0,
+              streak:     0,
+              favorite:   false,
+              nextReview: null
+            }))
+        };
+
+        if (newDeck.cards.length === 0) {
+          alert(t('alertDeckImportInvalid'));
+          return;
+        }
+
+        state.decks.push(newDeck);
+        markUnsaved();
+        renderLibrary();
+        alert(t('alertDeckImportSuccess'));
+      } catch {
+        alert(t('alertDeckImportError'));
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ── START FRESH ──
+  // Resets unsaved flag and navigates to empty Library.
+  function startFresh() {
+    // state already initialized as empty
+    unsavedChanges = false;
+    renderLibrary();
+    showPage('page-library');
+  }
+
+  // ── JSON IMPORT ──
+  function importJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const parsed = JSON.parse(e.target.result);
+
+        // version compatibility check
+        if (parsed.version && parsed.version !== JSON_VERSION) {
+          alert(`${t('errorIncompat')} (${parsed.version}). ${t('errorIncompatSub')} ${JSON_VERSION}.`);
+          return;
+        }
+
+        state = parsed;
+        if (!state.version) state.version = JSON_VERSION;
+        unsavedChanges = false;
+        applyLanguage();
+        renderLibrary();
+        showPage('page-library');
+      } catch (err) {
+        alert(t('alertImportError'));
+      }
+    };
+    reader.readAsText(file);
+
+    // reset input so same file can be re-imported
+    event.target.value = '';
+  }
+
+  // ── JSON EXPORT ──
+  function exportJSON() {
+    const json     = JSON.stringify(state, null, 2);
+    const blob     = new Blob([json], { type: 'application/json' });
+    const url      = URL.createObjectURL(blob);
+    const a        = document.createElement('a');
+    a.href         = url;
+    a.download     = 'flixcard-data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+
+    unsavedChanges = false;
+    document.getElementById('unsaved-banner').classList.remove('visible');
+  }
+
+  // ── MARK UNSAVED ──
+  function markUnsaved() {
+    unsavedChanges = true;
+    document.getElementById('unsaved-banner').classList.add('visible');
+  }
+
+  // ── LIBRARY RENDER ──
+  function renderLibrary() {
+    const list = document.getElementById('deck-list');
+    const pct  = document.getElementById('lib-total-pct');
+
+    const decks = state.decks || [];
+
+    // calculate overall progress
+    let totalCards   = 0;
+    let learnedCards = 0;
+    decks.forEach(deck => {
+      totalCards   += (deck.cards || []).length;
+      learnedCards += (deck.cards || []).filter(c => c.learned).length;
+    });
+
+    const overallPct = totalCards > 0 ? Math.round((learnedCards / totalCards) * 100) : 0;
+    pct.textContent  = totalCards > 0 ? overallPct + '%' : '—';
+
+    // render list or empty state
+    if (decks.length === 0) {
+      list.innerHTML = `
+        <div class="library-empty">
+          <div class="library-empty-icon">∅</div>
+          <div class="library-empty-title">${t('libraryEmpty')}</div>
+          <div class="library-empty-sub">${t('libraryEmptySub')}</div>
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = decks.map((deck, i) => {
+      const cards      = deck.cards || [];
+      const learned    = cards.filter(c => c.learned).length;
+      const deckPct    = cards.length > 0 ? Math.round((learned / cards.length) * 100) : 0;
+      const num        = String(i + 1).padStart(2, '0');
+
+      return `
+        <div class="deck-item" onclick="openHub('${deck.id}')">
+          <div class="deck-num">${num}</div>
+          <div class="deck-info">
+            <div class="deck-name">${escapeHtml(deck.name)}</div>
+            ${deck.description ? `<div class="deck-desc">${escapeHtml(deck.description)}</div>` : ''}
+            <div class="deck-meta">
+              <div class="deck-progress-track">
+                <div class="deck-progress-fill" style="width:${deckPct}%"></div>
+              </div>
+              <div class="deck-count">${cards.length} ${t('cards')}</div>
+            </div>
+          </div>
+          <div class="deck-arrow">›</div>
+        </div>
+      `;
+    }).join('');
+
+    setupScrollArrow('deck-list', 'deck-list-arrow');
+  }
+
+  // Kept for backward-compat — now delegates to hub
+  let currentDeckId = null;
+
+  // ── SET SESSION LENGTH ──
+  // length: 10 | 20 | 0 (all)
+  function setSessionLength(length) {
+    sessionLength = length;
+    document.getElementById('chip-10').classList.toggle('active', length === 10);
+    document.getElementById('chip-20').classList.toggle('active', length === 20);
+    document.getElementById('chip-all').classList.toggle('active', length === 0);
+  }
+
+  // ── SET CARD DIRECTION ──
+  // dir: 'standard' | 'reversed' | 'random'
+  function setDirection(dir) {
+    cardDirection = dir;
+    ['standard', 'reversed', 'random'].forEach(d => {
+      document.getElementById('dir-' + d).classList.toggle('active', d === dir);
+    });
+  }
+
+  // ── START HARD CARDS SESSION ──
+  // Plays all cards with errorRate above threshold, sorted worst-first.
+  const HARD_THRESHOLD = 0.2;
+  // ── START HARD CARDS SESSION ──
+  // Plays all cards with errorRate ≥ HARD_THRESHOLD, sorted worst-first.
+  function startHardCards(deckId) {
+    const deck = state.decks.find(d => d.id === deckId);
+    if (!deck) return;
+    const queue = deck.cards
+      .filter(c => (c.errorRate || 0) >= HARD_THRESHOLD)
+      .sort((a, b) => (b.errorRate || 0) - (a.errorRate || 0));
+    if (!queue.length) { alert(t('alertNoHardCards')); return; }
+    initSession(queue, 'hard', t('modeHard'));
+    renderFlashcard();
+    showPage('page-flashcard');
+  }
+
+  // ════════════════════════════════════════
+  // WRITE MODE
+  // Uses shared session state: learnQueue, learnIndex, learnScoreGood, learnScoreBad
+  // ════════════════════════════════════════
+
+  // ── ACCENT NORMALIZER ──
+  // Strips diacritics for fuzzy comparison (é→e, ü→u, ñ→n etc.)
+  function stripAccents(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  // ── LEVENSHTEIN DISTANCE ──
+  function levenshtein(a, b) {
+    const m = a.length, n = b.length;
+    const dp = Array.from({ length: m + 1 }, (_, i) =>
+      Array.from({ length: n + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0)
+    );
+    for (let i = 1; i <= m; i++)
+      for (let j = 1; j <= n; j++)
+        dp[i][j] = a[i-1] === b[j-1]
+          ? dp[i-1][j-1]
+          : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    return dp[m][n];
+  }
+
+  // ── EVALUATE WRITE ANSWER ──
+  // Returns: 'correct' | 'almost' | 'wrong'
+  // 'almost' = only accents wrong, or ≤1 typo on short words / ≤2 on longer
+  function evaluateAnswer(input, correct) {
+    const a = input.trim().toLowerCase();
+    const b = correct.trim().toLowerCase();
+
+    if (a === b) return 'correct';
+
+    // Check if only difference is accents
+    if (stripAccents(a) === stripAccents(b)) return 'almost';
+
+    // Levenshtein tolerance: 1 typo per 6 chars, min 1, max 2
+    const maxDist = Math.min(2, Math.max(1, Math.floor(b.length / 6)));
+    const dist = levenshtein(stripAccents(a), stripAccents(b));
+    if (dist <= maxDist) return 'almost';
+
+    return 'wrong';
+  }
+
+  // ── START WRITE MODE ──
+  // Uses shared session state (learnQueue, learnIndex, learnScoreGood/Bad).
+  // summaryOrigin = 'write' routes summary retry back to write mode.
+  function startWrite(deckId) {
+    const deck = state.decks.find(d => d.id === deckId);
+    if (!deck || !deck.cards.length) return;
+
+    let queue = shuffleArray([...deck.cards]);
+    if (sessionLength > 0 && queue.length > sessionLength)
+      queue = queue.slice(0, sessionLength);
+
+    initSession(queue, 'write', t('modeWrite'));
+    summaryOrigin = 'write';
+    document.getElementById('write-nav-label').textContent = t('modeWrite');
+    renderWriteCard();
+    showPage('page-write');
+  }
+
+  // ── RENDER WRITE CARD ──
+  // Uses shared learnQueue/learnIndex/learnScoreGood/Bad.
+  function renderWriteCard() {
+    const card  = learnQueue[learnIndex];
+    const total = learnQueue.length;
+    const pct   = Math.round((learnIndex / total) * 100);
+
+    const useReverse = cardDirection === 'reversed' ||
+                      (cardDirection === 'random' && Math.random() < 0.5);
+
+    // store expected answer on card for checkWriteAnswer
+    card._writeAnswer = useReverse ? card.front : card.back;
+
+    document.getElementById('write-question').textContent        = useReverse ? card.back : card.front;
+    document.getElementById('write-progress-fill').style.width   = pct + '%';
+    document.getElementById('write-counter').textContent         = (learnIndex + 1) + ' / ' + total;
+    document.getElementById('write-score-good').textContent      = '✓ ' + learnScoreGood;
+    document.getElementById('write-score-bad').textContent       = '✕ ' + learnScoreBad;
+
+    // reset input
+    const input = document.getElementById('write-input');
+    input.value = '';
+    input.className = 'write-input';
+    input.disabled  = false;
+    input.placeholder = t('writeInputPh');
+
+    document.getElementById('write-result').style.display  = 'none';
+    document.getElementById('write-submit-btn').style.display = '';
+
+    setTimeout(() => input.focus(), 100);
+  }
+
+  // ── CHECK WRITE ANSWER ──
+  // Evaluates input against card._writeAnswer using fuzzy matching.
+  // Updates shared learnScoreGood/Bad and card errorRate.
+  function checkWriteAnswer() {
+    const input   = document.getElementById('write-input');
+    const answer  = learnQueue[learnIndex]._writeAnswer;
+    const result  = evaluateAnswer(input.value, answer);
+    const isGood  = result !== 'wrong';
+
+    if (isGood) learnScoreGood++; else learnScoreBad++;
+
+    document.getElementById('write-score-good').textContent = '✓ ' + learnScoreGood;
+    document.getElementById('write-score-bad').textContent  = '✕ ' + learnScoreBad;
+
+    input.className = 'write-input ' + result;
+    input.disabled  = true;
+    document.getElementById('write-submit-btn').style.display = 'none';
+
+    const badge   = document.getElementById('write-result-badge');
+    const correct = document.getElementById('write-result-correct');
+    const nextBtn = document.getElementById('write-next-btn');
+
+    badge.className = 'write-result-badge ' + result;
+    // dynamic key: resolves to writeResultCorrect | writeResultAlmost | writeResultWrong
+    badge.textContent = t('writeResult' + result.charAt(0).toUpperCase() + result.slice(1));
+
+    if (result === 'correct') {
+      correct.innerHTML = '';
+    } else if (result === 'almost') {
+      correct.innerHTML = `${t('writeResultTypo')} <strong>${answer}</strong>`;
+    } else {
+      correct.innerHTML = `${t('writeResultWas')} <strong>${answer}</strong>`;
+    }
+
+    nextBtn.textContent = learnIndex + 1 >= learnQueue.length ? t('sumBackDeck') : t('quizNext');
+    document.getElementById('write-result').style.display = 'flex';
+
+    // update spaced rep stats on the real card
+    const deck = state.decks.find(d => d.id === currentDeckId);
+    const live  = deck && deck.cards.find(c => c.id === learnQueue[learnIndex].id);
+    if (live) {
+      if (isGood) {
+        live.learned    = true;
+        live.streak     = (live.streak || 0) + 1;
+        const days      = SPACED_REP_INTERVALS[Math.min(live.streak - 1, SPACED_REP_INTERVALS.length - 1)];
+        live.nextReview = futureDateStr(days);
+        live.errorRate  = Math.max(0, (live.errorRate || 0) - 0.05);
+      } else {
+        live.streak     = 0;
+        live.nextReview = futureDateStr(1);
+        live.errorRate  = Math.min(1, (live.errorRate || 0) + 0.1);
+      }
+      markUnsaved();
+    }
+  }
+
+  // ── NEXT WRITE CARD ──
+  // Advances learnIndex; shows summary when queue is exhausted.
+  function nextWriteCard() {
+    learnIndex++;
+    if (learnIndex >= learnQueue.length) {
+      showSummary();
+    } else {
+      renderWriteCard();
+    }
+  }
+
+  // ── TOGGLE FAVORITE ──
+  // Flips the favorite flag on a card and re-renders the list.
+  function toggleFavorite(cardId) {
+    const deck = state.decks.find(d => d.id === currentDeckId);
+    if (!deck) return;
+    const card = deck.cards.find(c => c.id === cardId);
+    if (!card) return;
+    card.favorite = !card.favorite;
+    markUnsaved();
+    renderCardList();
+  }
+
+  // ── START FAVORITES MODE ──
+  // Starts a flashcard session using only favorited cards (shuffled).
+  // ── START FAVORITES MODE ──
+  // Plays only cards marked as favorite (shuffled).
+  function startFavorites(deckId) {
+    const deck = state.decks.find(d => d.id === deckId);
+    if (!deck) return;
+    const queue = shuffleArray(deck.cards.filter(c => c.favorite));
+    if (!queue.length) { alert(t('alertNoFavorites')); return; }
+    currentDeckId = deckId;
+    initSession(queue, 'favorites', t('modeFavorites'));
+    renderFlashcard();
+    showPage('page-flashcard');
+  }
+
+  // ── OPEN DECK (deprecated) ──
+  // Backward-compat wrapper — delegates to openHub().
+  function openDeck(deckId) {
+    openHub(deckId);
+  }
+
+  // ── EDIT CURRENT DECK ──
+  // Pre-fills the create form with existing deck data
+  function editCurrentDeck() {
+    const deck = state.decks.find(d => d.id === currentDeckId);
+    if (!deck) return;
+
+    document.getElementById('input-deck-name').value = deck.name;
+    document.getElementById('input-deck-desc').value = deck.description || '';
+    document.getElementById('create-deck-nav-label').textContent  = t('navEditDeck');
+    document.getElementById('create-deck-submit').textContent     = t('formSave');
+    document.getElementById('create-deck-back').onclick   = () => openHub(currentDeckId);
+    document.getElementById('create-deck-cancel').onclick = () => openHub(currentDeckId);
+
+    document.getElementById('page-create-deck').dataset.editId = currentDeckId;
+    showPage('page-create-deck');
+  }
+
+  // ── DELETE CURRENT DECK ──
+  function deleteCurrentDeck() {
+    const deck = state.decks.find(d => d.id === currentDeckId);
+    if (!deck) return;
+
+    const confirmed = confirm(`${t('deckDeleteConfirm')} "${deck.name}"`);
+    if (!confirmed) return;
+
+    state.decks = state.decks.filter(d => d.id !== currentDeckId);
+    currentDeckId = null;
+    markUnsaved();
+    renderLibrary();
+    showPage('page-library');
+  }
+
+  // (openManageCards and goBackFromCards defined after openHub below)
+
+  // ── RENDER CARD LIST ──
+  function renderCardList() {
+    const deck  = state.decks.find(d => d.id === currentDeckId);
+    const list  = document.getElementById('card-list');
+    const label = document.getElementById('manage-count-label');
+
+    if (!deck) return;
+
+    const cards = deck.cards || [];
+    label.textContent = cards.length + ' ' + t('cards');
+
+    if (cards.length === 0) {
+      list.innerHTML = `
+        <div class="cards-empty">
+          <div class="cards-empty-icon">∅</div>
+          <div class="cards-empty-title">${t('libraryEmpty')}</div>
+          <div style="font-size:0.75rem;color:var(--text-dim);">${t('manageAddLabel')}</div>
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = cards.map((card, i) => `
+      <div id="card-item-${card.id}">
+        <div class="card-item">
+          <div class="card-sides">
+            <div class="card-front">${escapeHtml(card.front)}</div>
+            <div class="card-back">${escapeHtml(card.back)}</div>
+          </div>
+          <div class="card-status ${card.learned ? 'learned' : ''}">${card.learned ? '✓' : '—'}</div>
+          <div class="card-actions">
+            <button class="card-btn fav ${card.favorite ? 'active' : ''}" onclick="toggleFavorite('${card.id}')">◆</button>
+            <button class="card-btn" onclick="toggleEditCard('${card.id}')">${t('cardEditBtn')}</button>
+            <button class="card-btn delete" onclick="deleteCard('${card.id}')">✕</button>
+          </div>
+        </div>
+        <div class="card-edit-row" id="edit-row-${card.id}">
+          <div class="card-edit-inputs">
+            <input class="form-input" id="edit-front-${card.id}" type="text" value="${escapeHtml(card.front)}" maxlength="200" placeholder="${t('fcSideFront')}">
+            <input class="form-input" id="edit-back-${card.id}"  type="text" value="${escapeHtml(card.back)}"  maxlength="200" placeholder="${t('fcSideBack')}">
+          </div>
+          <div class="card-edit-actions">
+            <button class="btn btn-ghost" style="padding:6px 16px;font-size:0.75rem;" onclick="toggleEditCard('${card.id}')">${t('formCancel')}</button>
+            <button class="btn btn-primary" style="padding:6px 16px;font-size:0.75rem;" onclick="saveCardEdit('${card.id}')">${t('manageSaveBtn')}</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    setupScrollArrow('card-list', 'card-list-arrow');
+  }
+  // ── ADD CARD ──
+  // Validates and adds a new card to the current deck.
+  function addCard() {
+    const frontInput = document.getElementById('input-card-front');
+    const backInput  = document.getElementById('input-card-back');
+    const front      = frontInput.value.trim();
+    const back       = backInput.value.trim();
+
+    // validation: both sides required
+    if (!front || !back) {
+      showFormError('error-card', t('errorBothRequired'));
+      return;
+    }
+
+    const deck = state.decks.find(d => d.id === currentDeckId);
+    if (!deck) return;
+
+    deck.cards.push({
+      id:                 generateId(),
+      front:              front,
+      back:               back,
+      learned:            false,
+      errorRate:          0,
+      favorite:           false,
+      nextReview:         null
+    });
+
+    frontInput.value = '';
+    backInput.value  = '';
+    frontInput.focus();
+
+    markUnsaved();
+    renderCardList();
+    // refresh detail stats when returning
+  }
+
+  // ── TOGGLE INLINE EDIT ROW ──
+  function toggleEditCard(cardId) {
+    const row = document.getElementById('edit-row-' + cardId);
+    if (!row) return;
+    row.classList.toggle('visible');
+    if (row.classList.contains('visible')) {
+      document.getElementById('edit-front-' + cardId).focus();
+    }
+  }
+
+  // ── SAVE INLINE CARD EDIT ──
+  function saveCardEdit(cardId) {
+    const front = document.getElementById('edit-front-' + cardId).value.trim();
+    const back  = document.getElementById('edit-back-'  + cardId).value.trim();
+
+    if (!front || !back) return;
+
+    const deck = state.decks.find(d => d.id === currentDeckId);
+    const card = deck && deck.cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    card.front = front;
+    card.back  = back;
+
+    markUnsaved();
+    renderCardList();
+  }
+
+  // ── DELETE CARD ──
+  function deleteCard(cardId) {
+    const deck = state.decks.find(d => d.id === currentDeckId);
+    if (!deck) return;
+
+    const confirmed = confirm(t('cardDeleteConfirm'));
+    if (!confirmed) return;
+
+    deck.cards = deck.cards.filter(c => c.id !== cardId);
+    markUnsaved();
+    renderCardList();
+  }
+
+  // ── DECK FORM: reset to "new" state ──
+  function resetDeckForm() {
+    document.getElementById('input-deck-name').value            = '';
+    document.getElementById('input-deck-desc').value            = '';
+    document.getElementById('create-deck-nav-label').textContent = t('navNewDeck');
+    document.getElementById('create-deck-submit').textContent    = t('formCreate');
+    document.getElementById('create-deck-back').onclick          = () => showPage('page-library');
+    document.getElementById('create-deck-cancel').onclick        = () => showPage('page-library');
+    document.getElementById('page-create-deck').dataset.editId  = '';
+    clearFormError('error-deck-name');
+  }
+
+  // ── DECK FORM: clear a specific error ──
+  function clearFormError(id) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = ''; el.classList.remove('visible'); }
+  }
+
+  // ── DECK FORM: show a specific error ──
+  function showFormError(id, msg) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = msg; el.classList.add('visible'); }
+  }
+
+  // ── DECK FORM: submit (create or update) ──
+  function submitDeckForm() {
+    const nameInput = document.getElementById('input-deck-name');
+    const descInput = document.getElementById('input-deck-desc');
+    const name      = nameInput.value.trim();
+    const desc      = descInput.value.trim();
+    const editId    = document.getElementById('page-create-deck').dataset.editId;
+
+    // validation: name must not be empty
+    if (!name) {
+      showFormError('error-deck-name', t('errorDeckRequired'));
+      nameInput.focus();
+      return;
+    }
+
+    // validation: name must be unique (ignore self when editing)
+    const duplicate = state.decks.find(d => d.name.toLowerCase() === name.toLowerCase() && d.id !== editId);
+    if (duplicate) {
+      showFormError('error-deck-name', t('errorDeckDuplicate'));
+      nameInput.focus();
+      return;
+    }
+
+    if (editId) {
+      const deck = state.decks.find(d => d.id === editId);
+      if (deck) { deck.name = name; deck.description = desc; }
+      markUnsaved();
+      openHub(editId);
+    } else {
+      const newDeck = {
+        id:          generateId(),
+        name:        name,
+        description: desc,
+        created:     new Date().toISOString().split('T')[0],
+        cards:       []
+      };
+      state.decks.push(newDeck);
+      markUnsaved();
+      renderLibrary();
+      openHub(newDeck.id);
+    }
+
+    resetDeckForm();
+  }
+
+  // Override library "New Deck" button to always reset form first
+  function openNewDeckForm() {
+    resetDeckForm();
+    showPage('page-create-deck');
+  }
+
+  // ── OPEN MANAGE CARDS (Page 4) ──
+  function openManageCards() {
+    const deck = state.decks.find(d => d.id === currentDeckId);
+    if (!deck) return;
+    document.getElementById('manage-nav-label').textContent = deck.name;
+    renderCardList();
+    showPage('page-manage-cards');
+    setupScrollArrow('card-list', 'card-list-arrow');
+  }
+
+  // ── NAVIGATE BACK FROM CARDS ──
+  function goBackFromCards() {
+    clearFormError('error-card');
+    document.getElementById('input-card-front').value = '';
+    document.getElementById('input-card-back').value  = '';
+    openHub(currentDeckId);
+  }
+
+  // ── OPEN HUB (Page 5) ──
+  // ── HUB HELPERS ──
+
+  // _hubCounts(deck) — compute deck statistics used by hub
+  function _hubCounts(deck) {
+    const cards    = deck.cards || [];
+    const today    = todayStr();
+    const learned  = cards.filter(c => c.learned).length;
+    return {
+      cards,
+      pct:      cards.length > 0 ? Math.round((learned / cards.length) * 100) : 0,
+      dueCount: cards.filter(c => !c.nextReview || c.nextReview <= today).length,
+      favCount: cards.filter(c => c.favorite).length,
+      hardCount:cards.filter(c => (c.errorRate || 0) >= HARD_THRESHOLD).length,
+      hasCards: cards.length > 0,
+      hasQuiz:  cards.length >= 2,
+    };
+  }
+
+  // _hubLabels(counts) — update all hub text labels and count hints
+  function _hubLabels(counts) {
+    const { dueCount, favCount, hardCount } = counts;
+
+    // dynamic count hints (not covered by data-i18n)
+    document.getElementById('hub-spaced-due').textContent =
+      dueCount  > 0 ? dueCount  + ' ' + t('cards') + ' ' + t('hubDueToday')        : '';
+    document.getElementById('hub-favorites-count').textContent =
+      favCount  > 0 ? favCount  + ' ' + t('cards') + ' ' + t('modeFavoritesCount') : '';
+    document.getElementById('hub-hard-count').textContent =
+      hardCount > 0 ? hardCount + ' ' + t('cards') + ' ' + t('modeHardCount')      : '';
+
+    // sync chip states
+    ['standard', 'reversed', 'random'].forEach(d => {
+      const el = document.getElementById('dir-' + d);
+      if (el) el.classList.toggle('active', d === cardDirection);
+    });
+    document.getElementById('chip-10').classList.toggle('active', sessionLength === 10);
+    document.getElementById('chip-20').classList.toggle('active', sessionLength === 20);
+    document.getElementById('chip-all').classList.toggle('active', sessionLength === 0);
+  }
+
+  // _hubDisabled(counts) — toggle disabled state on hub items
+  function _hubDisabled(counts) {
+    const { hasCards, hasQuiz, favCount, hardCount } = counts;
+    [
+      ['hub-flashcard', !hasCards],
+      ['hub-spaced',    !hasCards],
+      ['hub-quiz',      !hasQuiz],
+      ['hub-write',     !hasCards],
+      ['hub-favorites', !favCount],
+      ['hub-hard',      !hardCount],
+    ].forEach(([id, disabled]) =>
+      document.getElementById(id).classList.toggle('hub-disabled', disabled)
+    );
+  }
+
+  // ── OPEN HUB ──
+  // Main deck interface — composes the three hub helpers.
+  function openHub(deckId) {
+    const deck = state.decks.find(d => d.id === deckId);
+    if (!deck) return;
+    currentDeckId = deckId;
+
+    const counts = _hubCounts(deck);
+
+    // header (dynamic — not covered by data-i18n)
+    document.getElementById('hub-nav-label').textContent     = deck.name;
+    document.getElementById('hub-deck-name').textContent     = deck.name;
+    document.getElementById('hub-deck-sub').textContent      = deck.description || '';
+    document.getElementById('hub-progress-fill').style.width = counts.pct + '%';
+    document.getElementById('hub-progress-pct').textContent  = counts.pct + '%';
+
+    _hubLabels(counts);
+    _hubDisabled(counts);
+
+    showPage('page-hub');
+  }
+  // ════════════════════════════════════════
+
+  // learnMode: 'all' | 'spaced'
+  let learnMode      = 'all';
+  let learnQueue     = [];   // array of card objects to study
+  let learnIndex     = 0;    // current position in queue
+  let learnScoreGood = 0;
+  let learnScoreBad  = 0;
+  let sessionLength  = 10;   // 0 = all cards
+  let cardDirection  = 'standard'; // 'standard' | 'reversed' | 'random'
+  let cardFlipped    = false;
+
+  // SPACED REPETITION CONSTANTS
+  const SPACED_REP_INTERVALS = [1, 3, 7, 14, 30]; // days per correct streak
+
+  // ── START FLASHCARD SESSION ──
+  // mode: 'all' → all cards | 'spaced' → only cards due today
+  // ── INIT SESSION ──
+  // Shared setup for all flashcard-based learn modes.
+  // queue: array of card objects | mode: string label | navLabel: display string
+  // Returns false if queue is empty after filtering.
+  function initSession(queue, mode, navLabel) {
+    learnQueue     = queue;
+    learnMode      = mode;
+    learnScoreGood = 0;
+    learnScoreBad  = 0;
+    learnIndex     = 0;
+    cardFlipped    = false;
+    summaryOrigin  = 'flashcard';
+    document.getElementById('flashcard-nav-label').textContent = navLabel;
+  }
+
+  // ── START FLASHCARD SESSION ──
+  // mode: 'all' → all cards shuffled | 'spaced' → only cards due today
+  // Respects sessionLength chip setting (0 = all cards).
+  function startFlashcards(deckId, mode) {
+    const deck = state.decks.find(d => d.id === deckId);
+    if (!deck || !deck.cards.length) return;
+
+    let queue;
+    if (mode === 'spaced') {
+      const today = todayStr();
+      queue = deck.cards.filter(c => !c.nextReview || c.nextReview <= today);
+      if (!queue.length) { alert(t('alertNoDueCards')); return; }
+    } else {
+      queue = shuffleArray([...deck.cards]);
+    }
+
+    if (sessionLength > 0 && queue.length > sessionLength)
+      queue = queue.slice(0, sessionLength);
+
+    initSession(queue, mode, mode === 'spaced' ? t('modeSpaced') : t('modeFlashcard'));
+    renderFlashcard();
+    showPage('page-flashcard');
+  }
+
+  // ── RENDER CURRENT FLASHCARD ──
+  // Respects reverseMode: swaps front/back text when active
+  function renderFlashcard() {
+    const card  = learnQueue[learnIndex];
+    const total = learnQueue.length;
+    const pct   = Math.round((learnIndex / total) * 100);
+
+    // reset flip state
+    cardFlipped = false;
+    document.getElementById('fc-inner').classList.remove('flipped');
+    document.getElementById('fc-actions').style.visibility = 'hidden';
+
+    // populate texts — direction: standard | reversed | random
+    const useReverse = cardDirection === 'reversed' ||
+                      (cardDirection === 'random' && Math.random() < 0.5);
+    const frontText = useReverse ? card.back  : card.front;
+    const backText  = useReverse ? card.front : card.back;
+    document.getElementById('fc-front-text').textContent = frontText;
+    document.getElementById('fc-back-text').textContent  = backText;
+
+    // update counter + progress
+    document.getElementById('fc-counter').textContent       = (learnIndex + 1) + ' / ' + total;
+    document.getElementById('fc-progress-fill').style.width = pct + '%';
+    document.getElementById('fc-score-good').textContent    = '✓ ' + learnScoreGood;
+    document.getElementById('fc-score-bad').textContent     = '✕ ' + learnScoreBad;
+  }
+
+  // ── FLIP CARD ──
+  // Toggles between front and back — can be flipped as many times as needed.
+  // Rating buttons appear on first flip to back, hide again if flipped back to front.
+  function flipCard() {
+    const inner     = document.getElementById('fc-inner');
+    const actionsEl = document.getElementById('fc-actions');
+
+    cardFlipped = !cardFlipped;
+    inner.classList.toggle('flipped', cardFlipped);
+    actionsEl.style.visibility = cardFlipped ? 'visible' : 'hidden';
+  }
+
+  // ── RATE CARD (got it / not quite) ──
+  // correct: boolean
+  // Flow: disable buttons → unflip (400ms) → update content → show
+  function rateCard(correct) {
+    const deck = state.decks.find(d => d.id === currentDeckId);
+    const card = learnQueue[learnIndex];
+    const live = deck && deck.cards.find(c => c.id === card.id);
+
+    if (correct) {
+      learnScoreGood++;
+      if (live) {
+        live.learned    = true;
+        live.streak     = (live.streak || 0) + 1;
+        const days      = SPACED_REP_INTERVALS[Math.min(live.streak - 1, SPACED_REP_INTERVALS.length - 1)];
+        live.nextReview = futureDateStr(days);
+        live.errorRate  = Math.max(0, (live.errorRate || 0) - 0.05);
+      }
+    } else {
+      learnScoreBad++;
+      if (live) {
+        live.streak     = 0;
+        live.nextReview = futureDateStr(1);
+        live.errorRate  = Math.min(1, (live.errorRate || 0) + 0.1);
+      }
+    }
+
+    markUnsaved();
+
+    // Immediately disable buttons so user can't double-rate
+    const actionsEl = document.getElementById('fc-actions');
+    actionsEl.style.visibility = 'hidden';
+    cardFlipped = false;
+
+    const inner = document.getElementById('fc-inner');
+
+    // Step 1: unflip the card (animate back to front face)
+    inner.classList.remove('flipped');
+
+    // Step 2: after the unflip animation (400ms), load next card content
+    // We update text while card is face-front so the back is never seen mid-swap
+    setTimeout(() => {
+      learnIndex++;
+      if (learnIndex >= learnQueue.length) {
+        showSummary();
+      } else {
+        // Briefly suppress transition so the content swap is invisible,
+        // then re-enable for the next flip interaction
+        inner.classList.add('no-transition');
+        renderFlashcard();
+        // Force reflow so the class takes effect before we remove it
+        void inner.offsetWidth;
+        inner.classList.remove('no-transition');
+      }
+    }, 400);
+  }
+
+  // ── SHOW SESSION SUMMARY ──
+  // summaryOrigin tracks whether we came from flashcard or quiz
+  let summaryOrigin = 'flashcard';
+
+  // ── SHOW SUMMARY ──
+  // Renders session results and navigates to summary page.
+  function showSummary() {
+    const total = learnQueue.length || quizQueue.length;
+    const good  = learnScoreGood;
+    const pct   = total > 0 ? Math.round((good / total) * 100) : 0;
+
+    document.getElementById('sum-good').textContent = good;
+    document.getElementById('sum-bad').textContent  = learnScoreBad;
+    document.getElementById('sum-pct').textContent  = pct + '%';
+
+    updateStreak();
+    showPage('page-summary');
+  }
+
+  // ── RETRY FROM SUMMARY ──
+  function retrySummary() {
+    if (summaryOrigin === 'quiz') {
+      startQuiz(currentDeckId);
+    } else if (summaryOrigin === 'write') {
+      startWrite(currentDeckId);
+    } else {
+      startFlashcards(currentDeckId, learnMode);
+    }
+  }
+
+  // ── EXIT LEARN MODE ──
+  function exitLearnMode() {
+    openHub(currentDeckId);
+  }
+
+  // ════════════════════════════════════════
+  // PAGE 7 – QUIZ MODE
+  // ════════════════════════════════════════
+
+  const MAX_QUIZ_OPTIONS = 4; // always 4 choices
+
+  let quizQueue     = [];
+  let quizIndex     = 0;
+  let quizGood      = 0;
+  let quizBad       = 0;
+  let quizAnswered  = false;
+
+  // ── START QUIZ ──
+  function startQuiz(deckId) {
+    const deck = state.decks.find(d => d.id === deckId);
+    if (!deck || deck.cards.length < 2) {
+      alert(t('alertNeedCards'));
+      return;
+    }
+
+    quizQueue    = shuffleArray([...deck.cards]);
+    quizIndex    = 0;
+    quizGood     = 0;
+    quizBad      = 0;
+    quizAnswered = false;
+
+    document.getElementById('quiz-nav-label').textContent = deck.name;
+    renderQuizQuestion();
+    summaryOrigin = 'quiz';
+    showPage('page-quiz');
+  }
+
+  // ── RENDER QUIZ QUESTION ──
+  function renderQuizQuestion() {
+    const card  = quizQueue[quizIndex];
+    const total = quizQueue.length;
+    const pct   = Math.round((quizIndex / total) * 100);
+
+    quizAnswered = false;
+    document.getElementById('quiz-footer').style.display   = 'none';
+    document.getElementById('quiz-progress-fill').style.width = pct + '%';
+    document.getElementById('quiz-counter').textContent    = (quizIndex + 1) + ' / ' + total;
+    document.getElementById('quiz-score-good').textContent = '✓ ' + quizGood;
+    document.getElementById('quiz-score-bad').textContent  = '✕ ' + quizBad;
+    document.getElementById('quiz-question').textContent   = card.front;
+
+    // build 4 options: 1 correct + 3 random wrong answers
+    const deck         = state.decks.find(d => d.id === currentDeckId);
+    const otherCards   = deck.cards.filter(c => c.id !== card.id);
+    const wrongOptions = shuffleArray(otherCards).slice(0, MAX_QUIZ_OPTIONS - 1);
+    const options      = shuffleArray([card, ...wrongOptions]);
+
+    const letters = ['A', 'B', 'C', 'D'];
+    document.getElementById('quiz-options').innerHTML = options.map((opt, i) => `
+      <div class="quiz-option" id="qopt-${i}" data-card-id="${opt.id}" onclick="answerQuiz(${i}, '${opt.id}', '${card.id}')">
+        <div class="quiz-option-letter">${letters[i]}</div>
+        <div class="quiz-option-text">${escapeHtml(opt.back)}</div>
+        <div class="quiz-option-icon" id="qicon-${i}"></div>
+      </div>
+    `).join('');
+  }
+
+  // ── ANSWER QUIZ QUESTION ──
+  function answerQuiz(optionIndex, selectedCardId, correctCardId) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+
+    const correct = selectedCardId === correctCardId;
+
+    // disable all options to prevent double-clicking
+    document.querySelectorAll('.quiz-option').forEach(el => el.classList.add('answered'));
+
+    // mark selected option correct/wrong
+    document.getElementById('qopt-' + optionIndex).classList.add(correct ? 'correct' : 'wrong');
+    document.getElementById('qicon-' + optionIndex).textContent = correct ? '✓' : '✕';
+
+    // always highlight the correct answer using data-card-id
+    if (!correct) {
+      document.querySelectorAll('.quiz-option').forEach((el, i) => {
+        if (el.dataset.cardId === correctCardId) {
+          el.classList.add('correct');
+          document.getElementById('qicon-' + i).textContent = '✓';
+        }
+      });
+    }
+
+    if (correct) {
+      quizGood++;
+    } else {
+      quizBad++;
+      const deck = state.decks.find(d => d.id === currentDeckId);
+      const live = deck && deck.cards.find(c => c.id === correctCardId);
+      if (live) live.errorRate = Math.min(1, (live.errorRate || 0) + 0.1);
+      markUnsaved();
+    }
+
+    document.getElementById('quiz-score-good').textContent = '✓ ' + quizGood;
+    document.getElementById('quiz-score-bad').textContent  = '✕ ' + quizBad;
+    document.getElementById('quiz-footer').style.display   = 'block';
+  }
+
+  // ── NEXT QUIZ QUESTION ──
+  function nextQuizQuestion() {
+    quizIndex++;
+    if (quizIndex >= quizQueue.length) {
+      learnScoreGood = quizGood;
+      learnScoreBad  = quizBad;
+      // use quizQueue length for summary total calculation
+      learnQueue = quizQueue;
+      showSummary();
+    } else {
+      renderQuizQuestion();
+    }
+  }
+
+  // ════════════════════════════════════════
+  // STREAK & DATE UTILITIES
+  // ════════════════════════════════════════
+
+  // Returns today as 'YYYY-MM-DD'
+  function todayStr() {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  // Returns a date N days from today as 'YYYY-MM-DD'
+  function futureDateStr(days) {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    return d.toISOString().split('T')[0];
+  }
+
+  // Update daily streak
+  function updateStreak() {
+    const today     = todayStr();
+    const yesterday = futureDateStr(-1);
+    const last      = state.stats.lastStudyDay;
+
+    if (last === today) return; // already counted today
+    if (last === yesterday) {
+      state.stats.streak++;
+    } else {
+      state.stats.streak = 1; // reset streak
+    }
+    state.stats.lastStudyDay  = today;
+    state.stats.totalLearned += learnScoreGood;
+    markUnsaved();
+  }
+
+  // ── UTILITY: shuffle array (Fisher-Yates) ──
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // ════════════════════════════════════════
+  // PAGE 8 – STATISTICS
+  // ════════════════════════════════════════
+
+  // ── OPEN STATS PAGE ──
+  function openStats() {
+    const decks = state.decks || [];
+
+    // hero numbers
+    document.getElementById('stat-streak').textContent        = state.stats.streak || 0;
+    document.getElementById('stat-total-learned').textContent = state.stats.totalLearned || 0;
+    document.getElementById('stat-total-decks').textContent   = decks.length;
+
+    const list = document.getElementById('stats-deck-list');
+
+    if (decks.length === 0) {
+      list.innerHTML = `
+        <div class="stats-empty">
+          <div style="font-size:1.5rem;opacity:0.3;">∅</div>
+          <div>${t('statsEmpty')}</div>
+        </div>`;
+      showPage('page-stats');
+      return;
+    }
+
+    list.innerHTML = decks.map(deck => {
+      const cards   = deck.cards || [];
+      const learned = cards.filter(c => c.learned).length;
+      const pct     = cards.length > 0 ? Math.round((learned / cards.length) * 100) : 0;
+      const avgErr  = cards.length > 0
+        ? Math.round((cards.reduce((s, c) => s + (c.errorRate || 0), 0) / cards.length) * 100)
+        : 0;
+
+      return `
+        <div class="stats-deck-item">
+          <div class="stats-deck-row">
+            <div class="stats-deck-name">${escapeHtml(deck.name)}</div>
+            <div class="stats-deck-figures">
+              <span class="stats-deck-pct">${pct}%</span>
+              ${avgErr > 0 ? `<span class="stats-deck-err">err ${avgErr}%</span>` : ''}
+            </div>
+          </div>
+          <div class="stats-bar-track">
+            <div class="stats-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div style="margin-top:4px;font-size:0.68rem;color:var(--text-dim);">
+            ${learned} / ${cards.length} ${t('statsCardsLearned')}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    showPage('page-stats');
+    setupScrollArrow('stats-deck-list', 'stats-list-arrow');
+  }
+
+  // ════════════════════════════════════════
+  // PAGE 9 – SETTINGS
+  // ════════════════════════════════════════
+
+  // ════════════════════════════════════════
+  // VERSION LOG — single source of truth
+  // Format: { version: 'MAJOR.MINOR.PATCH', type: 'MAJOR'|'MINOR'|'PATCH', key: 'i18n-key' }
+  // APP_VERSION is automatically derived from the last entry.
+  // New release = add a new entry, done.
+  // ════════════════════════════════════════
+  const VERSION_LOG = [
+    { version: '0.1.0', type: 'MINOR', key: 'ver01' },
+    { version: '0.2.0', type: 'MINOR', key: 'ver02' },
+    { version: '0.3.0', type: 'MINOR', key: 'ver03' },
+    { version: '0.3.1', type: 'PATCH', key: 'ver031' },
+    { version: '0.4.0', type: 'MINOR', key: 'ver04' },
+    { version: '0.5.0', type: 'MINOR', key: 'ver05' },
+    { version: '0.5.1', type: 'PATCH', key: 'ver051' },
+    { version: '0.6.0', type: 'MINOR', key: 'ver06' },
+    { version: '0.6.1', type: 'PATCH', key: 'ver061' },
+    { version: '0.6.2', type: 'PATCH', key: 'ver062' },
+    { version: '0.6.3', type: 'PATCH', key: 'ver063' },
+    { version: '0.6.4', type: 'PATCH', key: 'ver064' },
+    { version: '0.7.0', type: 'MINOR', key: 'ver07' },
+    { version: '0.7.1', type: 'PATCH', key: 'ver071' },
+    { version: '0.8.0', type: 'MINOR', key: 'ver08' },
+    { version: '0.8.1', type: 'PATCH', key: 'ver081' },
+    { version: '0.8.2', type: 'PATCH', key: 'ver082' },
+    { version: '0.9.0', type: 'MINOR', key: 'ver09' },
+    { version: '0.9.1', type: 'PATCH', key: 'ver091' },
+    { version: '0.10.0', type: 'MINOR', key: 'ver100' },
+    { version: '0.10.1', type: 'PATCH', key: 'ver1001' },
+    { version: '0.10.2', type: 'PATCH', key: 'ver1002' },
+    { version: '0.11.0', type: 'MINOR', key: 'ver110' },
+    { version: '0.11.1', type: 'PATCH', key: 'ver1101' },
+    { version: '0.11.2', type: 'PATCH', key: 'ver1102' },
+  ];
+
+  // ── APP_VERSION: automatisch aus letztem Eintrag ──
+  const APP_VERSION = VERSION_LOG[VERSION_LOG.length - 1].version;
+
+  // ── OPEN SETTINGS PAGE ──
+  function openSettings() {
+    // version display
+    document.getElementById('settings-version').textContent = APP_VERSION;
+
+    // render full version log (all entries, newest first, with type badge)
+    // dynamic key: resolves to ver01 | ver02 | ... | ver1101 (see VERSION_LOG)
+    // Groups entries by MAJOR.MINOR — shows version number, type badge, description
+    const grouped = {};
+    VERSION_LOG.forEach(entry => {
+      const [maj, min] = entry.version.split('.');
+      const group = `${maj}.${min}`;
+      if (!grouped[group]) grouped[group] = [];
+      grouped[group].push(entry);
+    });
+
+    document.getElementById('version-log').innerHTML = Object.entries(grouped)
+      .reverse()
+      .map(([group, entries]) => {
+        const latest = entries[entries.length - 1];
+        const typeColor = latest.type === 'MAJOR' ? 'var(--error)'
+                        : latest.type === 'MINOR' ? 'var(--gold)'
+                        : 'var(--text-dim)';
+        const desc = entries.map(e => t(e.key)).join(' · ');
+        return `
+          <div class="version-log-item">
+            <div class="version-log-num">${latest.version}</div>
+            <div class="version-log-badge" style="color:${typeColor};">${latest.type}</div>
+            <div class="version-log-desc">${desc}</div>
+          </div>
+        `;
+      }).join('');
+
+    // highlight active language
+    ['en', 'de', 'fr', 'es'].forEach(lang => {
+      const btn = document.getElementById('lang-' + lang);
+      if (btn) btn.classList.toggle('active', lang === (state.language || 'en'));
+    });
+
+    showPage('page-settings');
+    setupScrollArrow('settings-scroll', 'settings-arrow');
+  }
+
+  // ── SET LANGUAGE ──
+  // lang: 'en' | 'de' | 'fr' | 'es'
+  function setLanguage(lang) {
+    state.language = lang;
+    markUnsaved();
+    applyLanguage();
+  }
+
+  // ── APPLY LANGUAGE: re-renders all dynamic UI text ──
+  // Called on language change and on import
+  // ── APPLY LANGUAGE ──
+  // Drives all UI text from data-i18n / data-i18n-ph / data-i18n-inner attributes.
+  // Called on language switch, import, and page init.
+  // data-i18n="key"            → sets element.textContent = t(key)
+  // data-i18n-ph="key"        → sets element.placeholder  = t(key)
+  // data-i18n-inner="k1|k2"   → sets innerHTML = t(k1) + <br><em> + t(k2) + </em>
+  function applyLanguage() {
+    const lang = state.language || 'en';
+
+    // highlight active language button
+    ['en', 'de', 'fr', 'es'].forEach(l => {
+      const btn = document.getElementById('lang-' + l);
+      if (btn) btn.classList.toggle('active', l === lang);
+    });
+
+    // textContent — data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      el.textContent = t(el.dataset.i18n);
+    });
+
+    // placeholder — data-i18n-ph
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      el.placeholder = t(el.dataset.i18nPh);
+    });
+
+    // split innerHTML (e.g. "Title<br><em>Subtitle</em>") — data-i18n-inner="k1|k2"
+    document.querySelectorAll('[data-i18n-inner]').forEach(el => {
+      const [k1, k2] = el.dataset.i18nInner.split('|');
+      el.innerHTML = k2 ? `${t(k1)}<br><em>${t(k2)}</em>` : t(k1);
+    });
+
+    // .welcome-sub has no id — set via class selector
+    const welcomeSub = document.querySelector('.welcome-sub');
+    if (welcomeSub) welcomeSub.textContent = t('welcomeSub');
+
+    // re-render hub if currently open (picks up new labels)
+    if (currentDeckId) {
+      const active = document.querySelector('.page.active');
+      if (active && active.id === 'page-hub') openHub(currentDeckId);
+    }
+
+    // re-render settings version log if open
+    if (document.querySelector('#page-settings.active')) openSettings();
+
+    renderLibrary();
+  }
+
+
+  // ── RESET ALL DATA ──
+  // Double-confirms and resets state to initial empty state.
+  function resetAllData() {
+    const first = confirm(t('alertResetConfirm1'));
+    if (!first) return;
+    const second = confirm(t('alertResetConfirm2'));
+    if (!second) return;
+
+    // reset to empty state
+    state = {
+      version:  JSON_VERSION,
+      language: 'en',
+      stats: { streak: 0, lastStudyDay: null, totalLearned: 0 },
+      decks: []
+    };
+
+    unsavedChanges = false;
+    document.getElementById('unsaved-banner').classList.remove('visible');
+    renderLibrary();
+    showPage('page-library');
+  }
+
+  // ── UTILITY: escape HTML ──
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── UTILITY: generate UUID ──
+  function generateId() {
+    return 'xxxx-xxxx'.replace(/x/g, () => Math.floor(Math.random() * 16).toString(16));
+  }
+
+  // ════════════════════════════════════════
+  // AUTO-UPDATE CHECKER
+  // Fetches the live index.html from GitHub Pages every 20s,
+  // extracts the version from VERSION_LOG via regex,
+  // and reloads automatically once the new version is live.
+  // ════════════════════════════════════════
+
+  const UPDATE_CHECK_URL      = 'https://seanmallick2008-ux.github.io/FlixCard/index.html';
+  const UPDATE_CHECK_INTERVAL = 20000; // 20 seconds
+  // Regex: extracts last version string from VERSION_LOG array in the fetched source
+  const UPDATE_VERSION_REGEX  = /VERSION_LOG\s*=\s*\[([\s\S]*?)\];/;
+  const UPDATE_SEMVER_REGEX   = /version:\s*['"]([0-9]+\.[0-9]+\.[0-9]+)['"]/g;
+
+  let updateCheckTimer    = null;
+  let detectedNewVersion  = null;
+
+  // ── Extract version from raw HTML source ──
+  // Returns the last version string found in VERSION_LOG, or null
+  function extractVersionFromSource(html) {
+    const logMatch = html.match(UPDATE_VERSION_REGEX);
+    if (!logMatch) return null;
+
+    const block = logMatch[1];
+    let match;
+    let lastVersion = null;
+    while ((match = UPDATE_SEMVER_REGEX.exec(block)) !== null) {
+      lastVersion = match[1];
+    }
+    // reset lastIndex after global regex use
+    UPDATE_SEMVER_REGEX.lastIndex = 0;
+    return lastVersion;
+  }
+
+  // ── Compare semver strings ──
+  // Returns true if remote > local
+  function isNewerVersion(local, remote) {
+    const parse = v => v.split('.').map(Number);
+    const [lMaj, lMin, lPat] = parse(local);
+    const [rMaj, rMin, rPat] = parse(remote);
+    if (rMaj !== lMaj) return rMaj > lMaj;
+    if (rMin !== lMin) return rMin > lMin;
+    return rPat > lPat;
+  }
+
+  // ── Show update overlay ──
+  function showUpdateOverlay(remoteVersion) {
+    document.getElementById('update-ver-old').textContent = 'v' + APP_VERSION;
+    document.getElementById('update-ver-new').textContent = 'v' + remoteVersion;
+    document.getElementById('update-overlay').classList.add('visible');
+  }
+
+  // ── Single update check ──
+  async function checkForUpdate() {
+    try {
+      // cache-bust so browser doesn't return stale response
+      const res = await fetch(UPDATE_CHECK_URL + '?_=' + Date.now(), {
+        cache: 'no-store'
+      });
+      if (!res.ok) return;
+
+      const html          = await res.text();
+      const remoteVersion = extractVersionFromSource(html);
+      if (!remoteVersion) return;
+
+      if (isNewerVersion(APP_VERSION, remoteVersion)) {
+        // New version detected — show overlay and switch to reload-check mode
+        detectedNewVersion = remoteVersion;
+        showUpdateOverlay(remoteVersion);
+
+        // Stop the regular check, start a faster check waiting for deploy to finish
+        clearInterval(updateCheckTimer);
+        updateCheckTimer = setInterval(waitForDeploy, UPDATE_CHECK_INTERVAL);
+      }
+    } catch (e) {
+      // Network error — silently ignore, will retry next interval
+    }
+  }
+
+  // ── Wait for deployment to complete, then reload ──
+  // Keeps fetching until the remote version matches detectedNewVersion,
+  // meaning GitHub Pages has finished deploying the new file.
+  async function waitForDeploy() {
+    try {
+      const res = await fetch(UPDATE_CHECK_URL + '?_=' + Date.now(), {
+        cache: 'no-store'
+      });
+      if (!res.ok) return;
+
+      const html          = await res.text();
+      const remoteVersion = extractVersionFromSource(html);
+      if (!remoteVersion) return;
+
+      // Once the live version matches what we detected → reload
+      if (remoteVersion === detectedNewVersion) {
+        clearInterval(updateCheckTimer);
+        window.location.reload(true);
+      }
+    } catch (e) {
+      // silently ignore
+    }
+  }
+
+  // ── Start the update checker after 20s initial delay ──
+  // (no point checking immediately on load)
+  setTimeout(() => {
+    checkForUpdate();
+    updateCheckTimer = setInterval(checkForUpdate, UPDATE_CHECK_INTERVAL);
+  }, UPDATE_CHECK_INTERVAL);
+  // Set version displays from APP_VERSION constant (single source of truth)
+  document.title = 'FlixCard v' + APP_VERSION;
+  const _wv = document.getElementById('welcome-version');
+  const _nv = document.getElementById('nav-version');
+  if (_wv) _wv.textContent = 'v' + APP_VERSION;
+  if (_nv) _nv.textContent = 'v' + APP_VERSION;
+
+  // Apply saved language (default: en)
+  applyLanguage();
+
+  // App starts on welcome page by default (page 0)
+  // If state already has decks (e.g. dev reload), go to library
+  if (state.decks.length > 0) {
+    renderLibrary();
+    showPage('page-library');
+  }
+
+</script>
+</div><!-- /app-shell -->
+</body>
+</html>
